@@ -9,6 +9,8 @@
         android:layout_height="wrap_content"
         android:text="Sil"
         android:layout_gravity="center_vertical"
+        android:onClick="SayiSil"
+        android:layout_weight="1"
         android:id="@+id/btnListedenSil" />
 
     <TextView
@@ -17,12 +19,14 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:layout_gravity="center_vertical"
+        android:layout_weight="2"
         android:id="@+id/txtSayilar" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Oyna"
+        android:text="Seç"
         android:layout_gravity="center_vertical"
+        android:layout_weight="1"
         android:id="@+id/chkOyna" />
 </LinearLayout>

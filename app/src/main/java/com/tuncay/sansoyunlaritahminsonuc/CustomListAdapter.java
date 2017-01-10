@@ -35,6 +35,7 @@ public class CustomListAdapter extends ArrayAdapter<ListElement> {
         LayoutInflater inflater = ((Activity)context).getLayoutInflater();
         convertView = inflater.inflate(R.layout.list_content, parent, false);
         Button btn = (Button) convertView.findViewById(R.id.btnListedenSil);
+        btn.setTag(position);
         TextView sayilar = (TextView) convertView.findViewById(R.id.txtSayilar);
         CheckBox cb = (CheckBox) convertView.findViewById(R.id.chkOyna);
         sayilar.setText(elements.get(position).getNums());

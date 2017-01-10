@@ -1,25 +1,28 @@
 package com.tuncay.sansoyunlaritahminsonuc;
 
-import android.app.LauncherActivity;
-import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Spinner;
 
+import com.tuncay.sansoyunlaritahminsonuc.db.LotteryContract;
+import com.tuncay.sansoyunlaritahminsonuc.db.LotteryDbHelper;
 import com.tuncay.sansoyunlaritahminsonuc.model.ListElement;
 
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<ListElement> adapter;
     int maxNumber = 54;
     int numOfFields = 6;
+    Spinner s;
+    ArrayList<String> array_spinner;
+    ArrayAdapter<String> spinnerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +47,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         /*SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -74,7 +73,18 @@ public class MainActivity extends AppCompatActivity {
         elements = new ArrayList<ListElement>();
         adapter = new CustomListAdapter(this, elements);
         listView.setAdapter(adapter);
+
+        array_spinner = new ArrayList<String>();
+        spinnerAdapter = new ArrayAdapter<String>(this,
+                R.layout.support_simple_spinner_dropdown_item, array_spinner);
+        s = (Spinner) findViewById(R.id.spnDate);
+        s.setAdapter(spinnerAdapter);
+
+        GetDates task = new GetDates();
+        task.execute();
+
     }
+
 
 
     public void Sifirla(View view) {
@@ -85,9 +95,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void Kaydet(View view) {
+        LotteryDbHelper dbHelper = new LotteryDbHelper(this);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+    }
+
+    public void SayiSil(View view) {
+        LinearLayout vwParentRow = (LinearLayout)view.getParent();
+        int position=(Integer) view.getTag();
+        ListElement element = adapter.getItem(position);
+        elements.remove(element);
+        adapter.notifyDataSetChanged();
+    }
+
     public void Doldur(View view) {
         Random random = new Random();
         //Sifirla(view);
+
+
 
         ArrayList<Integer> randomIntegers = getRandomIntegers(random, numOfFields);
         Collections.sort(randomIntegers);
@@ -104,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
     public void ListeyeEkle(View view) {
 
         ArrayList<Integer> currentNums = getCurrentNums();
+        if (currentNums.size() < numOfFields)
+            return;
+
         String currentNumString = "";
         for(int i = 0; i < currentNums.size(); i++){
             currentNumString += String.format("%1$2s", currentNums.get(i));
@@ -160,5 +188,37 @@ public class MainActivity extends AppCompatActivity {
             result.add(v);
         }
         return result;
+    }
+
+    class GetDates extends AsyncTask<Object, Void, ArrayList<Date>> {
+
+        @Override
+        protected ArrayList<Date> doInBackground(Object... objects) {
+            ArrayList<Date> result = new ArrayList<>();
+
+            Calendar date = Calendar.getInstance();
+            while( date.get( Calendar.DAY_OF_WEEK ) != Calendar.THURSDAY )
+                date.add( Calendar.DATE, 1 );
+
+            for (int i = 0; i < 5; i++){
+                result.add(date.getTime());
+                date.add( Calendar.DATE, 7 );
+            }
+
+            return result;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(ArrayList<Date> result) {
+            Format df = new SimpleDateFormat("dd/MM/yyyy");
+
+            for (int i = 0; i < result.size(); i++) {
+                array_spinner.add(df.format(result.get(i)));
+            }
+
+            spinnerAdapter.notifyDataSetChanged();
+        }
     }
 }
