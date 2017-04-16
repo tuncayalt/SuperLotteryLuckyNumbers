@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="#5A4B53"
+    tools:context="com.tuncay.superlotteryluckynumbers.SonCekilisActivity">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:textColor="#EEEEEE"
+        android:text="Son Çekiliş Tarihi"
+        />
+
+    <TextView
+        android:id="@+id/txtCekilisTarihi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FE2D2B"
+        android:textSize="35dp"
+        android:text=""
+        />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textColor="#EEEEEE"
+        android:textSize="40dp"
+        android:text="Numaralar"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:showDividers="middle"
+        android:divider="@drawable/empty_divider"
+        android:padding="20dp"
+
+        >
+        <TextView
+            android:id="@+id/txtCekilisNumaralar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+
+        <TextView
+            android:id="@+id/txtCekilisNumaralar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+        <TextView
+            android:id="@+id/txtCekilisNumaralar3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+        <TextView
+            android:id="@+id/txtCekilisNumaralar4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+        <TextView
+            android:id="@+id/txtCekilisNumaralar5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+        <TextView
+            android:id="@+id/txtCekilisNumaralar6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/textview_round"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:padding="10dp"
+            android:text="0"
+            />
+
+
+    </LinearLayout>
+
+</LinearLayout>

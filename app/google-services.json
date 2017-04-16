@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "730265778713",
+    "firebase_url": "https://superlotteryluckynumbers.firebaseio.com",
+    "project_id": "superlotteryluckynumbers",
+    "storage_bucket": "superlotteryluckynumbers.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730265778713:android:c5abaf00d639f24a",
+        "android_client_info": {
+          "package_name": "com.tuncay.superlotteryluckynumbers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "730265778713-qhngee2es8jaet5c7mqptb2538hpcsgb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tuncay.superlotteryluckynumbers",
+            "certificate_hash": "fac53a28759a85ca9c7d0cbcade590aa9efb7f78"
+          }
+        },
+        {
+          "client_id": "730265778713-77rcbijm85a97ab89asp3lcs9568jqjn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt2dYm9Io-0nR9aJ4UbwZ-NSPiOu4Y5MQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "730265778713-77rcbijm85a97ab89asp3lcs9568jqjn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
