@@ -42,7 +42,7 @@ public class SavedActivity extends AppCompatActivity {
         protected ArrayList<SavedListElement> doInBackground(Object... objects) {
             ArrayList<SavedListElement> result = new ArrayList<>();
 
-            final String TABLE_NAME = "LotteryNumbers";
+            final String TABLE_NAME = "Coupons";
             final String ORDER_COLUMN = LotteryContract.LotteryEntry.COLUMN_NAME_LOTTERY_TIME;
             final String USER = LotteryContract.LotteryEntry.COLUMN_NAME_USER;
 

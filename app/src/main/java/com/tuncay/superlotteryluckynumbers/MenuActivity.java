@@ -142,6 +142,11 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void Ayarlar(View view){
+        Intent intent = new Intent(this, AyarlarActivity.class);
+        startActivity(intent);
+    }
+
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);

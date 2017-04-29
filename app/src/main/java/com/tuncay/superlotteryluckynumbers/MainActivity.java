@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_USER, "tuncayalt@gmail.com");
         vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_WIN_COUNT, 3);
 
-        db.insert("LotteryNumbers", null, vals);
+        db.insert("Coupons", null, vals);
     }
 
     public void SayiSil(View view) {

@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="#5A4B53"
+        android:background="@drawable/layout_gradient"
         android:padding="20dp"
         android:gravity="center">
 
@@ -46,6 +46,17 @@
             android:textSize="15sp"
             android:padding="20dp"
             android:onClick="SonCekilis"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="AYARLAR"
+            android:id="@+id/btnAyarlar"
+            android:background="@drawable/buttonshape"
+            android:textColor="#EEEEEE"
+            android:textSize="15sp"
+            android:padding="20dp"
+            android:onClick="Ayarlar"/>
 
     </LinearLayout>
     <LinearLayout android:id="@+id/sign_in_bar"
