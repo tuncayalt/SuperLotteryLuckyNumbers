@@ -16,21 +16,21 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <TextView
+    <!--<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Şanslı Numaralarım"
         android:textColor="#EEEEEE"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/tvSansliNumaralar" />
+        android:id="@+id/tvSansliNumaralar" />-->
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="20dp"
         android:id="@+id/linearLayout">
 
         <EditText
@@ -39,10 +39,10 @@
             android:inputType="number"
             android:background="@drawable/textview_round"
             android:gravity="center"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:padding="10dp"
             android:ems="2"
-            android:id="@+id/edtNum1" />
+            android:id="@+id/edtNum1"/>
 
         <EditText
             android:layout_width="wrap_content"
@@ -107,19 +107,20 @@
         android:layout_marginTop="5dp"
         android:gravity="center_horizontal">
 
-
-        <!--<Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sıfırla"
-            android:onClick="Sifirla"
-            android:id="@+id/btnBastan" />-->
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Şanslı Numara Bul"
             android:onClick="Doldur"
             android:id="@+id/btnYeniNo" />
+        <Button
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Kendin Numara Gir"
+            android:onClick="NumPicker"
+            android:id="@+id/btnBastan" />
     </LinearLayout>
 
     <View

@@ -4,6 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/layout_gradient"
     tools:context="com.tuncay.superlotteryluckynumbers.AyarlarActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="En sevdiğiniz kelime?"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        android:textColor="#EEEEEE"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:textColor="#EE3333"
+        android:layout_marginTop="5dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/edtSevdigimKelimeAyarlar"
+        />
 
 </android.support.constraint.ConstraintLayout>

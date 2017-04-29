@@ -23,7 +23,7 @@
             android:textColor="#EEEEEE"
             android:textSize="15sp"
             android:padding="20dp"
-            android:onClick="SansliNumaraBul"/>
+            android:onClick="SevdigimKelimeAl"/>
 
         <Button
             android:layout_width="match_parent"

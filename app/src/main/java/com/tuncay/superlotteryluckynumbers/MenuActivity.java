@@ -1,6 +1,8 @@
 package com.tuncay.superlotteryluckynumbers;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,7 +11,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -122,9 +127,54 @@ public class MenuActivity extends AppCompatActivity {
 
 
 
-    public void SansliNumaraBul(View view){
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+    public void SevdigimKelimeAl(View view){
+        if (!getSevdigimKelime().isEmpty()){
+            Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+            startActivity(intent);
+            return;
+        }
+
+        final Dialog d = new Dialog(this);
+        d.setTitle("Sevdigim Sayı");
+        d.setContentView(R.layout.sevdigim_kelime);
+        d.setCanceledOnTouchOutside(false);
+        Button btnKelimeTamam = (Button) d.findViewById(R.id.btnKelimeTamam);
+        Button btnKelimeIptal = (Button) d.findViewById(R.id.btnKelimeIptal);
+        final EditText edtSevdigimKelime = (EditText) d.findViewById(R.id.edtSevdigimKelime);
+
+        btnKelimeTamam.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                if (edtSevdigimKelime.getText().toString().isEmpty())
+                    return;
+
+                SharedPreferences sharedPref = MenuActivity.this.getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("kelime", edtSevdigimKelime.getText().toString());
+                editor.apply();
+
+                Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                startActivity(intent);
+                d.dismiss();
+            }
+        });
+        btnKelimeIptal.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                d.dismiss();
+            }
+        });
+        d.show();
+
+
+    }
+
+    private String getSevdigimKelime(){
+        SharedPreferences sPref = getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
+        String sevdigimKelime = sPref.getString("kelime", "");
+        return sevdigimKelime;
     }
 
     public void Kuponlarim(View view){

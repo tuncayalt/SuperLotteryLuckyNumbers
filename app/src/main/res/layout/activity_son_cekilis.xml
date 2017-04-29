@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_horizontal"
-    android:background="#5A4B53"
+    android:background="@drawable/layout_gradient"
     tools:context="com.tuncay.superlotteryluckynumbers.SonCekilisActivity">
 
     <TextView

@@ -1,17 +1,23 @@
 package com.tuncay.superlotteryluckynumbers;
 
+import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
@@ -27,7 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener{
 
     EditText edtNum1, edtNum2,edtNum3,edtNum4,edtNum5,edtNum6;
     ListView listView;
@@ -40,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     Spinner s;
     ArrayList<String> array_spinner;
     ArrayAdapter<String> spinnerAdapter;
+    int pickerViewNumber = 0;
+    int pickerMinNumber = 0;
+    int pickerMaxNumber = 54;
 
 
     @Override
@@ -80,14 +89,72 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+    }
 
-
-    public void Sifirla(View view) {
+    public void Sifirla() {
         for (View v: views) {
             if (v instanceof EditText){
                 ((EditText) v).setText("");
+                v.setBackgroundResource(R.drawable.textview_round);
             }
         }
+        pickerMinNumber = 0;
+        pickerViewNumber = 0;
+    }
+
+    public void NumPicker(final View view) {
+        Sifirla();
+        final Dialog d = new Dialog(this);
+        d.setTitle("NumberPicker");
+        d.setContentView(R.layout.numpicker);
+        d.setCanceledOnTouchOutside(false);
+        Button b1 = (Button) d.findViewById(R.id.btnNumPickTamam);
+        Button b2 = (Button) d.findViewById(R.id.btnNumPickIptal);
+        final NumberPicker np = (NumberPicker) d.findViewById(R.id.npNumPiker);
+        np.setMaxValue(pickerMaxNumber);
+        np.setMinValue(pickerMinNumber + 1);
+        np.setWrapSelectorWheel(false);
+        np.setOnValueChangedListener(this);
+        (views.get(0)).setBackgroundResource(R.drawable.textview_selected);
+        b1.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                ((EditText)views.get(pickerViewNumber)).setText(leftPadding(np.getValue()));
+                views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_round);
+                pickerMinNumber = np.getValue();
+                if (pickerMinNumber >= pickerMaxNumber && pickerViewNumber < 5){
+                    Sifirla();
+                    np.setMinValue(1);
+                    np.setValue(1);
+                    views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_selected);
+                    return;
+                }
+                np.setMinValue(pickerMinNumber + 1);
+                pickerViewNumber++;
+                if (pickerViewNumber >= 6){
+                    pickerMinNumber = 0;
+                    pickerViewNumber = 0;
+                    ListeyeEkle();
+                    d.dismiss();
+                }
+                else{
+                    views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_selected);
+                }
+            }
+        });
+        b2.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                Sifirla();
+
+                d.dismiss();
+            }
+        });
+        d.show();
     }
 
     public void Kaydet(View view) {
@@ -107,6 +174,10 @@ public class MainActivity extends AppCompatActivity {
                 insertToDb(db, li, date, lotteryTime);
             }
         }
+
+        Intent intent = new Intent(this, SavedActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void insertToDb(SQLiteDatabase db, MainListElement li, String date, String lotteryTime) {
@@ -140,9 +211,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void Doldur(View view) {
-        Random random = new Random();
-        //Sifirla(view);
-
+        Random random = new Random(getRanSeed());
         ArrayList<Integer> randomIntegers = getRandomIntegers(random, numOfFields);
         Collections.sort(randomIntegers);
         int i = 0;
@@ -153,11 +222,17 @@ public class MainActivity extends AppCompatActivity {
                 i++;
             }
         }
-
-        ListeyeEkle(view);
+        ListeyeEkle();
     }
 
-    public void ListeyeEkle(View view) {
+    public long getRanSeed(){
+        SharedPreferences sp = getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
+        String kelime = sp.getString("kelime", "");
+        long seed = kelime.hashCode() ^ System.nanoTime();
+        return seed;
+    }
+
+    public void ListeyeEkle() {
 
         ArrayList<Integer> currentNums = getCurrentNums();
         if (currentNums.size() < numOfFields)
@@ -170,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                 currentNumString += "-";
         }
 
-        MainListElement listElement = new MainListElement(currentNumString, false);
+        MainListElement listElement = new MainListElement(currentNumString, true);
 
         elements.add(listElement);
         adapter.notifyDataSetChanged();
