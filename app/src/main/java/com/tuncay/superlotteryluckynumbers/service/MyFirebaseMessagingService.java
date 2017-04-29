@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.tuncay.superlotteryluckynumbers.MainActivity;
-import com.tuncay.superlotteryluckynumbers.R;
 
 /**
  * Created by mac on 16.04.2017.
@@ -26,7 +25,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService{
         notificationBuilder.setContentTitle("FCM Notification");
         notificationBuilder.setContentText(remoteMessage.getNotification().getBody());
         notificationBuilder.setAutoCancel(true);
-        notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
+        //notificationBuilder.setSmallIcon(R.mipmap.ic_launcher);
         notificationBuilder.setContentIntent(pendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notificationBuilder.build());

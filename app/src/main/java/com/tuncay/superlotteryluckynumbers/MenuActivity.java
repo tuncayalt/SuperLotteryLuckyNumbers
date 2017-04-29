@@ -24,8 +24,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -74,8 +74,15 @@ public class MenuActivity extends AppCompatActivity {
                 else{
                     signOutBar.setVisibility(View.VISIBLE);
                     signInBar.setVisibility(View.GONE);
+                    try {
+                        MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
+                        fireBaseInstanceIDService.saveUserMail(MenuActivity.this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+
         };
 
         mGoogleButton = (SignInButton) findViewById(R.id.btnGoogle);
@@ -112,6 +119,8 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     public void SansliNumaraBul(View view){
         Intent intent = new Intent(this, MainActivity.class);
