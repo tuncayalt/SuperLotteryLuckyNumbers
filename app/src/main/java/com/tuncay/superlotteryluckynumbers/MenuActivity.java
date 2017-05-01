@@ -13,8 +13,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.NumberPicker;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -43,6 +41,7 @@ public class MenuActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private LinearLayout signInBar;
     private LinearLayout signOutBar;
+    private String userMail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +129,7 @@ public class MenuActivity extends AppCompatActivity {
     public void SevdigimKelimeAl(View view){
         if (!getSevdigimKelime().isEmpty()){
             Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+            intent.putExtra("userMail", mAuth.getCurrentUser() == null ? "" : mAuth.getCurrentUser().getEmail());
             startActivity(intent);
             return;
         }

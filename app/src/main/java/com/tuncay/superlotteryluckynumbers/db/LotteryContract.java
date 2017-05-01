@@ -26,7 +26,7 @@ public final class LotteryContract {
 
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE " + LotteryEntry.TABLE_NAME + " (" +
-                        LotteryEntry.COLUMN_NAME_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        LotteryEntry.COLUMN_NAME_ID + " TEXT," +
                         LotteryEntry.COLUMN_NAME_USER + " TEXT," +
                         LotteryEntry.COLUMN_NAME_GAME_TYPE + " TEXT," +
                         LotteryEntry.COLUMN_NAME_NUMS + " TEXT," +

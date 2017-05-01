@@ -12,7 +12,6 @@
         android:gravity="center"
         android:padding="8dp"
         android:text=""
-        android:textAllCaps="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FFF"
         android:textStyle="bold"

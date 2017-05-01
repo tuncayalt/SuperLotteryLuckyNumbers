@@ -6,8 +6,10 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.util.Pair;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
@@ -31,25 +33,24 @@ public class MyHttpHandler {
     long fakeWaitMillis;
     Callable onErrorFunc;
     Callable onSuccessFunc;
-    Pair<String, String>[] parameters;
+    String jsonString;
 
     public MyHttpHandler(Context context, String progressMessage, String urlString,
-                         String method, long fakeWaitMillis, Pair<String, String>[] parameters, Callable onErrorFunc,
-                         Callable onSuccessFunc){
+                         String method, long fakeWaitMillis, Callable onErrorFunc,
+                         Callable onSuccessFunc, String jsonString){
         this.context = context;
         this.progressMessage = progressMessage;
         this.urlString = urlString;
         this.method = method;
         this.fakeWaitMillis = fakeWaitMillis;
-        this.parameters = parameters;
         this.onErrorFunc = onErrorFunc;
         this.onSuccessFunc = onSuccessFunc;
+        this.jsonString = jsonString;
     }
 
     public void execute(){
         JsonTask task = new JsonTask();
         task.execute();
-
     }
 
 
@@ -60,10 +61,12 @@ public class MyHttpHandler {
         @Override
         protected void onPreExecute() {
             progress = new ProgressDialog(context);
-            progress.setIndeterminate(true);
-            progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progress.setMessage(progressMessage);
-            progress.show();
+            if (method.equals("GET")){
+                progress.setIndeterminate(true);
+                progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                progress.setMessage(progressMessage);
+                progress.show();
+            }
         }
 
         @Override
@@ -75,30 +78,31 @@ public class MyHttpHandler {
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setReadTimeout(10000);
                 conn.setConnectTimeout(15000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
                 conn.setRequestMethod(method);
                 conn.setDoInput(true);
                 conn.setDoOutput(true);
 
-                Uri.Builder builder = new Uri.Builder();
-
-                if (parameters != null){
-                    for (Pair<String, String> param : parameters) {
-                        builder.appendQueryParameter(param.first, param.second);
-                    }
+                if(method.equals("POST") || method.equals("PUT")){
+                    OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
+                    wr.write(jsonString);
+                    wr.flush();
                 }
-
-                String query = builder.build().getEncodedQuery();
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-
-                conn.connect();
-                error = false;
+                int HttpResult = conn.getResponseCode();
+                if (HttpResult == HttpsURLConnection.HTTP_OK) {
+                    BufferedReader br = new BufferedReader(
+                            new InputStreamReader(conn.getInputStream(), "utf-8"));
+                    String line ;
+                    while ((line = br.readLine()) != null) {
+                        resultText.append(line);
+                    }
+                    br.close();
+                    error = false;
+                } else {
+                    System.out.println(conn.getResponseMessage());
+                    error = true;
+                }
 
                 result = resultText.toString();
 
@@ -122,7 +126,6 @@ public class MyHttpHandler {
                 return null;
             }
         }
-
         @Override
         protected void onPostExecute(String result) {
             if (error) {

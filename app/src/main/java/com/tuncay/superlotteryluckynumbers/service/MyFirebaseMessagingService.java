@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.tuncay.superlotteryluckynumbers.MainActivity;
+import com.tuncay.superlotteryluckynumbers.SavedActivity;
 
 /**
  * Created by mac on 16.04.2017.
@@ -18,7 +19,7 @@ import com.tuncay.superlotteryluckynumbers.MainActivity;
 public class MyFirebaseMessagingService extends FirebaseMessagingService{
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        Intent intent  = new Intent(this, MainActivity.class);
+        Intent intent  = new Intent(this, SavedActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this);

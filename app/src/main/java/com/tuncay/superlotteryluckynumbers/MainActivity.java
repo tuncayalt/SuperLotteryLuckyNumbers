@@ -1,7 +1,9 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -19,19 +22,36 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
 import com.tuncay.superlotteryluckynumbers.db.LotteryContract;
 import com.tuncay.superlotteryluckynumbers.db.LotteryDbHelper;
+import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.MainListElement;
+import com.tuncay.superlotteryluckynumbers.service.MyHttpHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
 
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener{
 
@@ -49,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     int pickerViewNumber = 0;
     int pickerMinNumber = 0;
     int pickerMaxNumber = 54;
+    String urlInsertCoupons = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/coupon";
+    List<Coupon> couponList;
 
 
     @Override
@@ -169,35 +191,74 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         String date = sdf.format(new Date());
         String lotteryTime = s.getSelectedItem().toString();
 
+        couponList = new ArrayList<>();
+        JSONArray couponJsonArr = new JSONArray();
         for (MainListElement li : elements) {
             if (li.getOyna()){
-                insertToDb(db, li, date, lotteryTime);
+                final Coupon coupon = new Coupon();
+                coupon.CouponId = java.util.UUID.randomUUID().toString();
+                coupon.User = getIntent().getStringExtra("userMail");
+                coupon.GameType = "Sup";
+                coupon.Numbers = li.getNumString();
+                coupon.PlayTime = date;
+                coupon.LotteryTime = lotteryTime;
+                coupon.ToRemind = "T";
+                coupon.ServerCalled = "F";
+                coupon.WinCount = 0;
+                couponList.add(coupon);
+
+                JSONObject couponJson = new JSONObject();
+                try {
+                    couponJson.put("CouponId", coupon.CouponId);
+                    couponJson.put("User", coupon.User);
+                    couponJson.put("GameType", coupon.GameType);
+                    couponJson.put("Numbers", coupon.Numbers);
+                    couponJson.put("PlayTime", coupon.PlayTime);
+                    couponJson.put("LotteryTime", coupon.LotteryTime);
+                    couponJson.put("ToRemind", coupon.ToRemind);
+                    couponJson.put("WinCount", coupon.WinCount);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                couponJsonArr.put(couponJson);
+
+                insertToDb(db, coupon);
             }
         }
+        MyHttpHandler httpHandler = new MyHttpHandler(this, "", urlInsertCoupons, "POST", 0, new Callable() {
+            @Override
+            public Object call() throws Exception {
+                return null;
+            }
+        }, new Callable() {
+            @Override
+            public Object call() throws Exception {
+                return null;
+            }
+        }, couponJsonArr.toString());
+        httpHandler.execute();
+
 
         Intent intent = new Intent(this, SavedActivity.class);
         startActivity(intent);
         finish();
     }
 
-    private void insertToDb(SQLiteDatabase db, MainListElement li, String date, String lotteryTime) {
-
-
+    private void insertToDb(SQLiteDatabase db, Coupon coupon) {
         ContentValues vals = new ContentValues();
 
-        String[] nums = li.getNumString().split("-");
-
-        String[] dateLotteryArr = lotteryTime.split("/");
+        String[] dateLotteryArr = coupon.LotteryTime.split("/");
         String dateLottery = dateLotteryArr[2] + "/" + dateLotteryArr[1] + "/" + dateLotteryArr[0];
 
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_GAME_TYPE, "Sup");
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_PLAY_TIME, date);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_NUMS, li.getNumString());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_ID, coupon.CouponId);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_GAME_TYPE, coupon.GameType);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_PLAY_TIME, coupon.PlayTime);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_NUMS, coupon.Numbers);
         vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_LOTTERY_TIME, dateLottery);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_SERVER_CALLED, "N");
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_TO_REMIND, "Y");
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_USER, "tuncayalt@gmail.com");
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_WIN_COUNT, 3);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_SERVER_CALLED, coupon.ServerCalled);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_TO_REMIND, coupon.ToRemind);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_USER, coupon.User);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_WIN_COUNT, coupon.WinCount);
 
         db.insert("Coupons", null, vals);
     }
@@ -307,6 +368,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         return result;
     }
 
+
+
     class GetDates extends AsyncTask<Object, Void, ArrayList<Date>> {
 
         @Override
@@ -324,8 +387,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
             return result;
         }
-
-
 
         @Override
         protected void onPostExecute(ArrayList<Date> result) {

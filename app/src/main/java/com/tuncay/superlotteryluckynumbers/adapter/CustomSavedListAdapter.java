@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.tuncay.superlotteryluckynumbers.R;
@@ -66,8 +67,8 @@ public class CustomSavedListAdapter extends BaseAdapter {
         return position;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+    public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
         int rowType = getItemViewType(position);
 
         if (convertView == null) {
@@ -75,24 +76,37 @@ public class CustomSavedListAdapter extends BaseAdapter {
             switch (rowType) {
                 case TYPE_ITEM:
                     convertView = mInflater.inflate(R.layout.saved_item, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.text);
+
+                    holder.btnSavedSil = (Button) convertView.findViewById(R.id.btnSavedSil);
+                    holder.btnSavedSil.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mData.remove(position);
+                            notifyDataSetChanged();
+                        }
+                    });
+
+                    holder.tvSaved = (TextView) convertView.findViewById(R.id.tvSaved);
+                    holder.tvSavedWin = (TextView) convertView.findViewById(R.id.tvSavedWin);
                     break;
                 case TYPE_SEPARATOR:
                     convertView = mInflater.inflate(R.layout.saved_header, null);
-                    holder.textView = (TextView) convertView.findViewById(R.id.textSeparator);
+                    holder.tvSaved = (TextView) convertView.findViewById(R.id.textSeparator);
                     break;
             }
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.textView.setText(mData.get(position));
+        holder.tvSaved.setText(mData.get(position));
 
         return convertView;
     }
 
     public static class ViewHolder {
-        public TextView textView;
+        public Button btnSavedSil;
+        public TextView tvSaved;
+        public TextView tvSavedWin;
     }
 
 }
