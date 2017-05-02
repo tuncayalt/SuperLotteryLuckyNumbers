@@ -1,26 +1,25 @@
 package com.tuncay.superlotteryluckynumbers.model;
 
-import java.util.Date;
-
 import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mac on 1.05.2017.
  */
 
 public class Coupon extends RealmObject{
-    @PrimaryKey
-    public String CouponId;
-    public String User;
-    public String GameType;
-    public String Numbers;
-    public String PlayTime;
-    public String LotteryTime;
-    public String ToRemind;
-    public String ServerCalled;
-    public int WinCount;
+    private String CouponId;
+    private String User;
+    private String GameType;
+    private String Numbers;
+    private String PlayTime;
+    private String LotteryTime;
+    private String ToRemind;
+    private String ServerCalled;
+    private int WinCount;
 
+    public Coupon(){
+
+    }
 
     public String getCouponId() {
         return CouponId;

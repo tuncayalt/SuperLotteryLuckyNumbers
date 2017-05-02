@@ -53,6 +53,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Callable;
 
+import io.realm.Realm;
+
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener{
 
     EditText edtNum1, edtNum2,edtNum3,edtNum4,edtNum5,edtNum6;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     int pickerMaxNumber = 54;
     String urlInsertCoupons = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/coupon";
     List<Coupon> couponList;
+    Realm realm;
 
 
     @Override
@@ -105,6 +108,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 R.layout.support_simple_spinner_dropdown_item, array_spinner);
         s = (Spinner) findViewById(R.id.spnDate);
         s.setAdapter(spinnerAdapter);
+
+        Realm.init(this);
+        realm = Realm.getDefaultInstance();
 
         GetDates task = new GetDates();
         task.execute();
@@ -192,39 +198,46 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         String lotteryTime = s.getSelectedItem().toString();
 
         couponList = new ArrayList<>();
+        String userName = getIntent().getStringExtra("userMail");
         JSONArray couponJsonArr = new JSONArray();
+
         for (MainListElement li : elements) {
             if (li.getOyna()){
-                final Coupon coupon = new Coupon();
-                coupon.CouponId = java.util.UUID.randomUUID().toString();
-                coupon.User = getIntent().getStringExtra("userMail");
-                coupon.GameType = "Sup";
-                coupon.Numbers = li.getNumString();
-                coupon.PlayTime = date;
-                coupon.LotteryTime = lotteryTime;
-                coupon.ToRemind = "T";
-                coupon.ServerCalled = "F";
-                coupon.WinCount = 0;
+
+                Coupon coupon = new Coupon();
+                coupon.setCouponId(java.util.UUID.randomUUID().toString());
+                coupon.setUser(userName);
+                coupon.setGameType("Sup");
+                coupon.setNumbers(li.getNumString());
+                coupon.setPlayTime(date);
+                coupon.setLotteryTime(lotteryTime);
+                coupon.setToRemind("T");
+                coupon.setServerCalled("F");
+                coupon.setWinCount(0);
                 couponList.add(coupon);
 
                 JSONObject couponJson = new JSONObject();
                 try {
-                    couponJson.put("CouponId", coupon.CouponId);
-                    couponJson.put("User", coupon.User);
-                    couponJson.put("GameType", coupon.GameType);
-                    couponJson.put("Numbers", coupon.Numbers);
-                    couponJson.put("PlayTime", coupon.PlayTime);
-                    couponJson.put("LotteryTime", coupon.LotteryTime);
-                    couponJson.put("ToRemind", coupon.ToRemind);
-                    couponJson.put("WinCount", coupon.WinCount);
+                    couponJson.put("CouponId", coupon.getCouponId());
+                    couponJson.put("User", coupon.getUser());
+                    couponJson.put("GameType", coupon.getGameType());
+                    couponJson.put("Numbers", coupon.getNumbers());
+                    couponJson.put("PlayTime", coupon.getPlayTime());
+                    couponJson.put("LotteryTime", coupon.getLotteryTime());
+                    couponJson.put("ToRemind", coupon.getToRemind());
+                    couponJson.put("WinCount", coupon.getWinCount());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 couponJsonArr.put(couponJson);
 
-                insertToDb(db, coupon);
+                //insertToDb(db, coupon);
             }
         }
+        realm.beginTransaction();
+        List<Coupon> couponListRealm = realm.copyToRealm(couponList);
+        realm.commitTransaction();
+
         MyHttpHandler httpHandler = new MyHttpHandler(this, "", urlInsertCoupons, "POST", 0, new Callable() {
             @Override
             public Object call() throws Exception {
@@ -240,6 +253,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
 
         Intent intent = new Intent(this, SavedActivity.class);
+        intent.putExtra("userName", userName);
         startActivity(intent);
         finish();
     }
@@ -247,18 +261,18 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private void insertToDb(SQLiteDatabase db, Coupon coupon) {
         ContentValues vals = new ContentValues();
 
-        String[] dateLotteryArr = coupon.LotteryTime.split("/");
+        String[] dateLotteryArr = coupon.getLotteryTime().split("/");
         String dateLottery = dateLotteryArr[2] + "/" + dateLotteryArr[1] + "/" + dateLotteryArr[0];
 
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_ID, coupon.CouponId);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_GAME_TYPE, coupon.GameType);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_PLAY_TIME, coupon.PlayTime);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_NUMS, coupon.Numbers);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_ID, coupon.getCouponId());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_GAME_TYPE, coupon.getGameType());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_PLAY_TIME, coupon.getPlayTime());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_NUMS, coupon.getNumbers());
         vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_LOTTERY_TIME, dateLottery);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_SERVER_CALLED, coupon.ServerCalled);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_TO_REMIND, coupon.ToRemind);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_USER, coupon.User);
-        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_WIN_COUNT, coupon.WinCount);
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_SERVER_CALLED, coupon.getServerCalled());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_TO_REMIND, coupon.getToRemind());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_USER, coupon.getUser());
+        vals.put(LotteryContract.LotteryEntry.COLUMN_NAME_WIN_COUNT, coupon.getWinCount());
 
         db.insert("Coupons", null, vals);
     }

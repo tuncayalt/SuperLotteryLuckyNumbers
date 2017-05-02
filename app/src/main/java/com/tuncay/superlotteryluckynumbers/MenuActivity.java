@@ -184,6 +184,7 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         Intent intent = new Intent(this, SavedActivity.class);
+        intent.putExtra("userName", mAuth.getCurrentUser().getEmail());
         startActivity(intent);
     }
 

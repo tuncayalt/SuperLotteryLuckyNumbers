@@ -39,7 +39,7 @@ public class SavedActivity extends AppCompatActivity {
         lvSavedList.setAdapter(adapter);
 
         Realm.init(this);
-        realm = Realm.getDefaultInstance();
+
 
 
         GetSaved task = new GetSaved();
@@ -62,9 +62,9 @@ public class SavedActivity extends AppCompatActivity {
 
             SQLiteDatabase db  = dbHelper.getReadableDatabase();
             Cursor cursor      = db.rawQuery(selectQuery, null);*/
-
-
-            final RealmResults<Coupon> coupons = realm.where(Coupon.class).equalTo("User", SavedActivity.this.getIntent().getStringExtra("userName")).findAll();
+            realm = Realm.getDefaultInstance();
+            String userName = SavedActivity.this.getIntent().getStringExtra("userName");
+            final RealmResults<Coupon> coupons = realm.where(Coupon.class).equalTo("User", userName).findAll();
 
             if (!coupons.isEmpty()){
                 for (Coupon coupon : coupons) {
