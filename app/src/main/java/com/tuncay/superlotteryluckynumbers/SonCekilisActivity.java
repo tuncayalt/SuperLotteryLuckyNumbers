@@ -10,6 +10,12 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSerializer;
+import com.tuncay.superlotteryluckynumbers.model.Cekilis;
+import com.tuncay.superlotteryluckynumbers.service.IServerService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,10 +27,14 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class SonCekilisActivity extends AppCompatActivity {
 
     private static final String TAG = "SonCekilisActivity";
-    String urlCekilis = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/cekilis";
+    String urlCekilis = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     boolean error;
     TextView txtCekilisTarihi;
     TextView txtCekilisNumaralar1;
@@ -34,6 +44,7 @@ public class SonCekilisActivity extends AppCompatActivity {
     TextView txtCekilisNumaralar5;
     TextView txtCekilisNumaralar6;
     String sonTarih;
+    IServerService serverService;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +58,14 @@ public class SonCekilisActivity extends AppCompatActivity {
         txtCekilisNumaralar4 = (TextView) findViewById(R.id.txtCekilisNumaralar4);
         txtCekilisNumaralar5 = (TextView) findViewById(R.id.txtCekilisNumaralar5);
         txtCekilisNumaralar6 = (TextView) findViewById(R.id.txtCekilisNumaralar6);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlCekilis)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // Create an instance of our GitHub API interface.
+        serverService = retrofit.create(IServerService.class);
 
         FillCekilisBilgileri();
 
@@ -73,18 +92,14 @@ public class SonCekilisActivity extends AppCompatActivity {
             String result = "";
             StringBuilder resultText = new StringBuilder();
             try {
-                URL url = new URL(params[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    resultText.append(line);
-                }
-                rd.close();
-                error = false;
+                Call<Cekilis> call = serverService.getSonCekilis();
+                Cekilis cekilis = call.execute().body();
 
-                result = resultText.toString();
+                Gson gson = new Gson();
+
+                result = gson.toJson(cekilis);
+
+                error = false;
 
                 try {
                     Thread.sleep(300);
@@ -165,9 +180,8 @@ public class SonCekilisActivity extends AppCompatActivity {
 
     }
 
-
     public void FillCekilisBilgileri() {
-        JsonReadTask task1 = new JsonReadTask();
-        task1.execute(urlCekilis);
+        JsonReadTask task = new JsonReadTask();
+        task.execute();
     }
 }

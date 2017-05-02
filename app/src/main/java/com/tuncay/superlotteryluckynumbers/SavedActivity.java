@@ -1,16 +1,10 @@
 package com.tuncay.superlotteryluckynumbers;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ListView;
 import com.tuncay.superlotteryluckynumbers.adapter.CustomSavedListAdapter;
-import com.tuncay.superlotteryluckynumbers.db.LotteryContract;
-import com.tuncay.superlotteryluckynumbers.db.LotteryDbHelper;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
 
@@ -21,7 +15,6 @@ import io.realm.RealmResults;
 
 public class SavedActivity extends AppCompatActivity {
 
-    LotteryDbHelper dbHelper;
     ListView lvSavedList;
     CustomSavedListAdapter adapter;
     Realm realm;
@@ -34,7 +27,6 @@ public class SavedActivity extends AppCompatActivity {
 
         lvSavedList = (ListView) findViewById(R.id.lvSavedList);
         adapter = new CustomSavedListAdapter(this);
-        dbHelper = new LotteryDbHelper(this);
 
         lvSavedList.setAdapter(adapter);
 
@@ -52,16 +44,6 @@ public class SavedActivity extends AppCompatActivity {
         protected ArrayList<SavedListElement> doInBackground(String... params) {
             ArrayList<SavedListElement> result = new ArrayList<>();
 
-            /*final String TABLE_NAME = "Coupons";
-            final String ORDER_COLUMN = LotteryContract.LotteryEntry.COLUMN_NAME_LOTTERY_TIME;
-            final String USER = LotteryContract.LotteryEntry.COLUMN_NAME_USER;
-
-            String selectQuery = "SELECT * FROM " + TABLE_NAME +
-                    " WHERE " + USER + " = " + "'tuncayalt@gmail.com'" +
-                    " ORDER BY " + ORDER_COLUMN ;
-
-            SQLiteDatabase db  = dbHelper.getReadableDatabase();
-            Cursor cursor      = db.rawQuery(selectQuery, null);*/
             realm = Realm.getDefaultInstance();
             String userName = SavedActivity.this.getIntent().getStringExtra("userName");
             final RealmResults<Coupon> coupons = realm.where(Coupon.class).equalTo("User", userName).findAll();
