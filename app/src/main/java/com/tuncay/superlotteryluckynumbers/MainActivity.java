@@ -20,11 +20,7 @@ import android.widget.Spinner;
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.MainListElement;
-import com.tuncay.superlotteryluckynumbers.service.MyHttpHandler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -34,9 +30,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 
 import io.realm.Realm;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener{
 
@@ -54,7 +54,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     int pickerViewNumber = 0;
     int pickerMinNumber = 0;
     int pickerMaxNumber = 54;
-    String urlInsertCoupons = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/coupon";
+    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+    IServerService serverService;
+
     List<Coupon> couponList;
     Realm realm;
 
@@ -94,6 +96,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         Realm.init(this);
         realm = Realm.getDefaultInstance();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlBase)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        serverService = retrofit.create(IServerService.class);
 
         GetDates task = new GetDates();
         task.execute();
@@ -179,8 +188,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         String[] dateLotteryArr = lotteryTime.split("/");
         String dateLottery = dateLotteryArr[2] + "/" + dateLotteryArr[1] + "/" + dateLotteryArr[0];
         couponList = new ArrayList<>();
-        String userName = getIntent().getStringExtra("userMail");
-        JSONArray couponJsonArr = new JSONArray();
+        final String userName = getIntent().getStringExtra("userMail");
+        //JSONArray couponJsonArr = new JSONArray();
 
         for (MainListElement li : elements) {
             if (li.getOyna()){
@@ -193,11 +202,12 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 coupon.setPlayTime(date);
                 coupon.setLotteryTime(dateLottery);
                 coupon.setToRemind("T");
-                coupon.setServerCalled("F");
+                coupon.setServerCalled(false);
                 coupon.setWinCount(0);
+                coupon.setDeleted(false);
                 couponList.add(coupon);
 
-                JSONObject couponJson = new JSONObject();
+                /*JSONObject couponJson = new JSONObject();
                 try {
                     couponJson.put("CouponId", coupon.getCouponId());
                     couponJson.put("User", coupon.getUser());
@@ -206,31 +216,42 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                     couponJson.put("PlayTime", coupon.getPlayTime());
                     couponJson.put("LotteryTime", coupon.getLotteryTime());
                     couponJson.put("ToRemind", coupon.getToRemind());
+                    couponJson.put("ServerCalled", coupon.isServerCalled());
                     couponJson.put("WinCount", coupon.getWinCount());
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                couponJsonArr.put(couponJson);
+                couponJsonArr.put(couponJson);*/
             }
         }
         realm.beginTransaction();
-        List<Coupon> couponListRealm = realm.copyToRealm(couponList);
+        realm.copyToRealm(couponList);
         realm.commitTransaction();
 
-        MyHttpHandler httpHandler = new MyHttpHandler(this, "", urlInsertCoupons, "POST", 0, new Callable() {
+        Call<Boolean> couponsCall = serverService.insertCoupon(couponList);
+        couponsCall.enqueue(new Callback<Boolean>() {
             @Override
-            public Object call() throws Exception {
-                return null;
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()){
+                    realm.beginTransaction();
+                    for (Coupon coupon: couponList) {
+                        coupon.setServerCalled(true);
+                    }
+                    realm.commitTransaction();
+                }
+                goToSaved(userName);
             }
-        }, new Callable() {
+
             @Override
-            public Object call() throws Exception {
-                return null;
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                goToSaved(userName);
             }
-        }, couponJsonArr.toString());
-        httpHandler.execute();
+        });
 
+    }
 
+    private void goToSaved(String userName) {
         Intent intent = new Intent(this, SavedActivity.class);
         intent.putExtra("userName", userName);
         startActivity(intent);
@@ -238,7 +259,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     public void SayiSil(View view) {
-        LinearLayout vwParentRow = (LinearLayout)view.getParent();
         int position=(Integer) view.getTag();
         MainListElement element = adapter.getItem(position);
         elements.remove(element);
@@ -263,8 +283,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     public long getRanSeed(){
         SharedPreferences sp = getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
         String kelime = sp.getString("kelime", "");
-        long seed = kelime.hashCode() ^ System.nanoTime();
-        return seed;
+        return kelime.hashCode() ^ System.nanoTime();
     }
 
     public void ListeyeEkle() {

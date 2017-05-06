@@ -1,81 +1,149 @@
 package com.tuncay.superlotteryluckynumbers;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.Toast;
+
 import com.tuncay.superlotteryluckynumbers.adapter.CustomSavedListAdapter;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
+import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import io.realm.Sort;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SavedActivity extends AppCompatActivity {
+public class SavedActivity extends AppCompatActivity{
 
     ListView lvSavedList;
     CustomSavedListAdapter adapter;
     Realm realm;
+    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+    IServerService serverService;
+    List<Coupon> coupons;
+    ArrayList<SavedListElement> result;
+    String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.saved_coupons);
 
-
         lvSavedList = (ListView) findViewById(R.id.lvSavedList);
         adapter = new CustomSavedListAdapter(this);
-
         lvSavedList.setAdapter(adapter);
+
+        userName = SavedActivity.this.getIntent().getStringExtra("userName");
 
         Realm.init(this);
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlBase)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
 
+        serverService = retrofit.create(IServerService.class);
 
-        GetSaved task = new GetSaved();
-        task.execute();
+        GetSavedCoupons();
     }
 
-    class GetSaved extends AsyncTask<String, Void, ArrayList<SavedListElement>> {
+    private void GetSavedCoupons() {
+        result = new ArrayList<>();
 
-        @Override
-        protected ArrayList<SavedListElement> doInBackground(String... params) {
-            ArrayList<SavedListElement> result = new ArrayList<>();
-
+        try {
             realm = Realm.getDefaultInstance();
-            String userName = SavedActivity.this.getIntent().getStringExtra("userName");
-            final RealmResults<Coupon> coupons = realm.where(Coupon.class).equalTo("User", userName).findAll();
 
-            if (!coupons.isEmpty()){
-                for (Coupon coupon : coupons) {
-                    String numString = coupon.getNumbers();
-                    String lotteryDate = coupon.getLotteryTime();
-                    SavedListElement le = new SavedListElement(lotteryDate, numString, 0);
-                    result.add(le);
-                }
+
+            SharedPreferences shaPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
+            long couponsLastTime = shaPref.getLong("couponsLastTime", 0);
+
+            if (System.currentTimeMillis() - couponsLastTime > 60000){
+                SharedPreferences sharedPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putLong("couponsLastTime", System.currentTimeMillis());
+                editor.apply();
+
+                Call<List<Coupon>> couponsCall = serverService.getCoupons(userName);
+                couponsCall.enqueue(new Callback<List<Coupon>>() {
+                    @Override
+                    public void onResponse(Call<List<Coupon>> call, Response<List<Coupon>> response) {
+
+                        if (response.isSuccessful()){
+                            coupons = response.body();
+                            if (coupons != null && !coupons.isEmpty()){
+                                Iterator<Coupon> it = coupons.iterator();
+                                while (it.hasNext()) {
+                                    Coupon coupon = it.next();
+                                    Coupon couponLocal = realm.where(Coupon.class)
+                                            .equalTo("couponId", coupon.getCouponId()).findFirst();
+                                    if (couponLocal != null && couponLocal.isDeleted()){
+                                        it.remove();
+                                    }
+                                }
+                                realm.beginTransaction();
+                                realm.copyToRealmOrUpdate(coupons);
+                                realm.commitTransaction();
+                            }
+                        }
+                        getCouponsFromLocalDb(userName);
+                    }
+                    @Override
+                    public void onFailure(Call<List<Coupon>> call, Throwable t) {
+                        Toast.makeText(SavedActivity.this, "Kuponlar sunucudan alınamadı, İnternet bağlantınızı kontrol edin.",
+                                Toast.LENGTH_SHORT).show();
+                        getCouponsFromLocalDb(userName);
+                    }
+                });
+            }
+            else {
+                getCouponsFromLocalDb(userName);
             }
 
-            return result;
+        } catch (IllegalArgumentException e) {
+            if (realm.isInTransaction())
+                realm.cancelTransaction();
+            e.printStackTrace();
         }
 
-        @Override
-        protected void onPostExecute(ArrayList<SavedListElement> result) {
-            for (int i = 0; i < result.size(); i++) {
-                SavedListElement sle = result.get(i);
-                String ld = sle.getLotteryDate();
-                if (i == 0 || !ld.equals(result.get(i - 1).getLotteryDate())) {
-                    adapter.addSectionHeaderItem(ld + " çekilişi");
-                }
-                if (sle.getWinCount() >= 3){
-                    adapter.addItem(sle.getNumString() + ";" + sle.getWinCount() + " tuttu.");
-                }else{
-                    adapter.addItem(sle.getNumString());
-                }
-            }
-
-            adapter.notifyDataSetChanged();
-        }
     }
+
+    private void getCouponsFromLocalDb(String userName) {
+        RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userName).equalTo("isDeleted", false).findAllSorted("playTime", Sort.DESCENDING);
+
+        if (couponRealmResults != null && !couponRealmResults.isEmpty()){
+            for (Coupon coupon : couponRealmResults) {
+                String numString = coupon.getNumbers();
+                String lotteryDate = coupon.getLotteryTime();
+                int winCount = coupon.getWinCount();
+                String couponId = coupon.getCouponId();
+                SavedListElement le = new SavedListElement(lotteryDate, numString, winCount, couponId);
+                result.add(le);
+            }
+        }
+        for (int i = 0; i < result.size(); i++) {
+            SavedListElement sle = result.get(i);
+            String ld = sle.getLotteryDate();
+            if (i == 0 || !ld.equals(result.get(i - 1).getLotteryDate())) {
+                adapter.addSectionHeaderItem(ld + " çekilişi");
+            }
+            adapter.addItem(sle.getNumString() + ";" + sle.getWinCount() + ";" + sle.getCouponId());
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
 }

@@ -1,97 +1,107 @@
 package com.tuncay.superlotteryluckynumbers.model;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by mac on 1.05.2017.
  */
 
 public class Coupon extends RealmObject{
-    private String CouponId;
-    private String User;
-    private String GameType;
-    private String Numbers;
-    private String PlayTime;
-    private String LotteryTime;
-    private String ToRemind;
-    private String ServerCalled;
-    private int WinCount;
+    @PrimaryKey
+    private String couponId;
+    private String user;
+    private String gameType;
+    private String numbers;
+    private String playTime;
+    private String lotteryTime;
+    private String toRemind;
+    private boolean serverCalled;
+    private int winCount;
+    private boolean isDeleted;
 
     public Coupon(){
 
     }
 
+
+    public boolean isServerCalled() {
+        return serverCalled;
+    }
+
+    public void setServerCalled(boolean serverCalled) {
+        this.serverCalled = serverCalled;
+    }
     public String getCouponId() {
-        return CouponId;
+        return couponId;
     }
 
     public void setCouponId(String couponId) {
-        CouponId = couponId;
+        this.couponId = couponId;
     }
 
     public String getUser() {
-        return User;
+        return user;
     }
 
     public void setUser(String user) {
-        User = user;
+        this.user = user;
     }
 
     public String getGameType() {
-        return GameType;
+        return gameType;
     }
 
     public void setGameType(String gameType) {
-        GameType = gameType;
+        this.gameType = gameType;
     }
 
     public String getNumbers() {
-        return Numbers;
+        return numbers;
     }
 
     public void setNumbers(String numbers) {
-        Numbers = numbers;
+        this.numbers = numbers;
     }
 
     public String getPlayTime() {
-        return PlayTime;
+        return playTime;
     }
 
     public void setPlayTime(String playTime) {
-        PlayTime = playTime;
+        this.playTime = playTime;
     }
 
     public String getLotteryTime() {
-        return LotteryTime;
+        return lotteryTime;
     }
 
     public void setLotteryTime(String lotteryTime) {
-        LotteryTime = lotteryTime;
+        this.lotteryTime = lotteryTime;
     }
 
     public String getToRemind() {
-        return ToRemind;
+        return toRemind;
     }
 
     public void setToRemind(String toRemind) {
-        ToRemind = toRemind;
-    }
-
-    public String getServerCalled() {
-        return ServerCalled;
-    }
-
-    public void setServerCalled(String serverCalled) {
-        ServerCalled = serverCalled;
+        this.toRemind = toRemind;
     }
 
     public int getWinCount() {
-        return WinCount;
+        return winCount;
     }
 
     public void setWinCount(int winCount) {
-        WinCount = winCount;
+        this.winCount = winCount;
     }
 
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 
 }

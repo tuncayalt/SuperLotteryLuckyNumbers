@@ -8,6 +8,23 @@ public class SavedListElement {
     String lotteryDate;
     String nums;
     int winCount;
+    String couponId;
+
+    public String getNums() {
+        return nums;
+    }
+
+    public void setNums(String nums) {
+        this.nums = nums;
+    }
+
+    public String getCouponId() {
+        return couponId;
+    }
+
+    public void setCouponId(String couponId) {
+        this.couponId = couponId;
+    }
 
     public int getWinCount() {
         return winCount;
@@ -25,10 +42,11 @@ public class SavedListElement {
         this.lotteryDate = lotteryDate;
     }
 
-    public SavedListElement(String lotteryDate, String nums, int winCount){
+    public SavedListElement(String lotteryDate, String nums, int winCount, String couponId){
         this.lotteryDate = lotteryDate;
         this.nums = nums;
         this.winCount = winCount;
+        this.couponId = couponId;
     }
 
     public String getNumString() {

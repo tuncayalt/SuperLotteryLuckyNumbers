@@ -11,30 +11,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSerializer;
 import com.tuncay.superlotteryluckynumbers.model.Cekilis;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
-import java.net.URL;
 
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SonCekilisActivity extends AppCompatActivity {
 
     private static final String TAG = "SonCekilisActivity";
-    String urlCekilis = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     boolean error;
     TextView txtCekilisTarihi;
     TextView txtCekilisNumaralar1;
@@ -43,7 +36,6 @@ public class SonCekilisActivity extends AppCompatActivity {
     TextView txtCekilisNumaralar4;
     TextView txtCekilisNumaralar5;
     TextView txtCekilisNumaralar6;
-    String sonTarih;
     IServerService serverService;
     
     @Override
@@ -60,17 +52,20 @@ public class SonCekilisActivity extends AppCompatActivity {
         txtCekilisNumaralar6 = (TextView) findViewById(R.id.txtCekilisNumaralar6);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlCekilis)
+                .baseUrl(urlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        // Create an instance of our GitHub API interface.
         serverService = retrofit.create(IServerService.class);
 
         FillCekilisBilgileri();
 
     }
 
+    private void FillCekilisBilgileri() {
+        JsonReadTask task = new JsonReadTask();
+        task.execute();
+    }
 
     // Async Task to access the web
     private class JsonReadTask extends AsyncTask<String, Void, String> {
@@ -90,10 +85,8 @@ public class SonCekilisActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             String result = "";
-            StringBuilder resultText = new StringBuilder();
             try {
-                Call<Cekilis> call = serverService.getSonCekilis();
-                Cekilis cekilis = call.execute().body();
+                Cekilis cekilis = serverService.getSonCekilis().execute().body();
 
                 Gson gson = new Gson();
 
@@ -139,8 +132,7 @@ public class SonCekilisActivity extends AppCompatActivity {
                 SharedPreferences sharedPref = SonCekilisActivity.this.getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putString("cekilisJson", result);
-                editor.commit();
-
+                editor.apply();
             }
             progress.dismiss();
         }
@@ -180,8 +172,5 @@ public class SonCekilisActivity extends AppCompatActivity {
 
     }
 
-    public void FillCekilisBilgileri() {
-        JsonReadTask task = new JsonReadTask();
-        task.execute();
-    }
+
 }

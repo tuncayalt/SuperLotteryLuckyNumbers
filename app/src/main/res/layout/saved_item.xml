@@ -23,17 +23,17 @@
         android:gravity="center_vertical"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FF0000" />
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/tvSavedWin"
         android:layout_width="0dp"
-        android:layout_weight="20"
+        android:layout_weight="30"
         android:layout_height="wrap_content"
-        android:background="#F00"
+        android:background="#EEEEEE"
         android:gravity="center_vertical"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#EEEEEE" />
+        android:textColor="#EE0000" />
 
 </LinearLayout>
