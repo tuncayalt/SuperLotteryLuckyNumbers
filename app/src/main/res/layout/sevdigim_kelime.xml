@@ -10,16 +10,17 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="En sevdiğiniz kelime?"
+        android:text="Şanslı numaralarınız oluşturulurken kullanılacak\nşanslı kelimeniz?"
         android:textSize="20dp"
         android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
         android:textColor="#EEEEEE"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30dp"
-        android:textColor="#EE3333"
+        android:textColor="#EE1111"
         android:layout_marginTop="5dp"
         android:layout_gravity="center_horizontal"
         android:id="@+id/edtSevdigimKelime"

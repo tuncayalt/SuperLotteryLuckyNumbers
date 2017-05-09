@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
@@ -107,6 +108,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         GetDates task = new GetDates();
         task.execute();
 
+
+
     }
 
     @Override
@@ -178,8 +181,15 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     }
 
     public void Kaydet(View view) {
-        if (elements == null || elements.size() == 0)
+        if (elements == null || elements.size() == 0) {
+            Toast.makeText(this, "Henüz bir kupon oluşturmadınız.", Toast.LENGTH_LONG).show();
             return;
+        }
+        final String userName = getIntent().getStringExtra("userMail");
+        if (userName == null || userName.isEmpty()){
+            Toast.makeText(this, "Kuponlarınızı kaydedebilmek için ana sayfadan giriş yapın.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS.SSS");
 
@@ -188,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         String[] dateLotteryArr = lotteryTime.split("/");
         String dateLottery = dateLotteryArr[2] + "/" + dateLotteryArr[1] + "/" + dateLotteryArr[0];
         couponList = new ArrayList<>();
-        final String userName = getIntent().getStringExtra("userMail");
+
         //JSONArray couponJsonArr = new JSONArray();
 
         for (MainListElement li : elements) {

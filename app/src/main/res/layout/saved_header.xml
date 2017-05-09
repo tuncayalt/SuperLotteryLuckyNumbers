@@ -13,7 +13,7 @@
         android:padding="8dp"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#FFF"
+        android:textColor="#EEEEEE"
         android:textStyle="bold"
         android:visibility="visible" />
 

@@ -28,7 +28,19 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.tuncay.superlotteryluckynumbers.model.Coupon;
+import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
+import com.tuncay.superlotteryluckynumbers.service.IServerService;
 import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
+import io.realm.Sort;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -42,6 +54,10 @@ public class MenuActivity extends AppCompatActivity {
     private LinearLayout signInBar;
     private LinearLayout signOutBar;
     private String userMail;
+    private Realm realm;
+    private String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+    private IServerService serverService;
+    private Coupon couponToDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +97,7 @@ public class MenuActivity extends AppCompatActivity {
                     try {
                         MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
                         fireBaseInstanceIDService.saveUserMail(MenuActivity.this);
+                        syncServer(firebaseAuth.getCurrentUser().getEmail());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -122,9 +139,47 @@ public class MenuActivity extends AppCompatActivity {
                 mAuth.signOut();
             }
         });
+
+        Realm.init(this);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlBase)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        serverService = retrofit.create(IServerService.class);
+
     }
 
+    private void syncServer(String userMail) {
+        realm = Realm.getDefaultInstance();
+        RealmResults<Coupon> notSyncedRealmResults = realm.where(Coupon.class).equalTo("user", userMail).equalTo("isDeleted", true).equalTo("serverCalled", false).findAll();
 
+        if (notSyncedRealmResults != null && !notSyncedRealmResults.isEmpty()){
+            for (Coupon coupon : notSyncedRealmResults) {
+                this.couponToDelete = coupon;
+                String couponIdToDelete = coupon.getCouponId();
+                Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
+                couponDeleteCall.enqueue(new Callback<Boolean>() {
+                    @Override
+                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                        if (response.isSuccessful()){
+                            realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+                            couponToDelete.setServerCalled(true);
+                            realm.commitTransaction();
+                        }
+                        else{
+                            Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<Boolean> call, Throwable t) {
+                        Log.d("CustomListAdapter", "response failure");
+                    }
+                });
+            }
+        }
+    }
 
     public void SevdigimKelimeAl(View view){
         if (!getSevdigimKelime().isEmpty()){
@@ -135,6 +190,7 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         final Dialog d = new Dialog(this);
+        d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         d.setTitle("Sevdigim Sayı");
         d.setContentView(R.layout.sevdigim_kelime);
         d.setCanceledOnTouchOutside(false);
@@ -155,6 +211,7 @@ public class MenuActivity extends AppCompatActivity {
                 editor.apply();
 
                 Intent intent = new Intent(MenuActivity.this, MainActivity.class);
+                intent.putExtra("userMail", mAuth.getCurrentUser() == null ? "" : mAuth.getCurrentUser().getEmail());
                 startActivity(intent);
                 d.dismiss();
             }

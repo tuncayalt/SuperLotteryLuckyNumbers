@@ -1,10 +1,9 @@
 package com.tuncay.superlotteryluckynumbers;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,7 +12,6 @@ import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class SavedActivity extends AppCompatActivity{
+public class SavedActivity extends AppCompatActivity implements CustomSavedListAdapter.IListener{
 
     ListView lvSavedList;
     CustomSavedListAdapter adapter;
@@ -46,6 +44,7 @@ public class SavedActivity extends AppCompatActivity{
         lvSavedList = (ListView) findViewById(R.id.lvSavedList);
         adapter = new CustomSavedListAdapter(this);
         lvSavedList.setAdapter(adapter);
+        adapter.setListener(this);
 
         userName = SavedActivity.this.getIntent().getStringExtra("userName");
 
@@ -121,7 +120,7 @@ public class SavedActivity extends AppCompatActivity{
 
     }
 
-    private void getCouponsFromLocalDb(String userName) {
+    public void getCouponsFromLocalDb(String userName) {
         RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userName).equalTo("isDeleted", false).findAllSorted("playTime", Sort.DESCENDING);
 
         if (couponRealmResults != null && !couponRealmResults.isEmpty()){
@@ -146,4 +145,9 @@ public class SavedActivity extends AppCompatActivity{
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void onDeleteCoupon(View v) {
+        int pos = lvSavedList.getPositionForView((View) v.getParent());
+        adapter.removeItem(pos);
+    }
 }
