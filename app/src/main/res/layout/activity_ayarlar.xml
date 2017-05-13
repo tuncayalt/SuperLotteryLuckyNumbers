@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/layout_gradient"
+    android:orientation="vertical"
     tools:context="com.tuncay.superlotteryluckynumbers.AyarlarActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="En sevdiğiniz kelime?"
+        android:text="Şanslı kelimeniz?"
         android:textSize="20dp"
         android:layout_gravity="center_horizontal"
         android:textColor="#EEEEEE"/>
@@ -18,11 +19,27 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:textColor="#EE3333"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
         android:id="@+id/edtSevdigimKelimeAyarlar"
         />
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Çekiliş sonrası sonucu haber almak istiyorum?"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:textColor="#EEEEEE"/>
+
+<Switch
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"/>
+
+
+</LinearLayout>

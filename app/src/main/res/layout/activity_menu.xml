@@ -14,49 +14,75 @@
         android:padding="20dp"
         android:gravity="center">
 
-        <Button
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="ŞANSLI NUMARA BUL"
-            android:id="@+id/btnSansliNumaraBul"
-            android:background="@drawable/buttonshape"
-            android:textColor="#EEEEEE"
-            android:textSize="15sp"
-            android:padding="20dp"
-            android:onClick="SevdigimKelimeAl"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="KUPONLARIM"
-            android:id="@+id/btnKuponlarım"
-            android:background="@drawable/buttonshape"
-            android:textColor="#EEEEEE"
-            android:textSize="15sp"
-            android:padding="20dp"
-            android:onClick="Kuponlarim"/>
+            <Button
+                android:id="@+id/btnSansliNumaraBul"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:onClick="SevdigimKelimeAl"
+                android:padding="20dp"
+                android:text="ŞANSLI NUMARA BUL"
+                android:textColor="#EEEEEE"
+                android:textSize="15sp" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="SON ÇEKİLİŞ SONUÇLARI"
-            android:id="@+id/btnSonCekilis"
-            android:background="@drawable/buttonshape"
-            android:textColor="#EEEEEE"
-            android:textSize="15sp"
-            android:padding="20dp"
-            android:onClick="SonCekilis"/>
+            <Button
+                android:id="@+id/btnKuponlarım"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:onClick="Kuponlarim"
+                android:padding="20dp"
+                android:text="KUPONLARIM"
+                android:textColor="#EEEEEE"
+                android:textSize="15sp" />
 
-        <Button
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="AYARLAR"
-            android:id="@+id/btnAyarlar"
-            android:background="@drawable/buttonshape"
-            android:textColor="#EEEEEE"
-            android:textSize="15sp"
-            android:padding="20dp"
-            android:onClick="Ayarlar"/>
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSonCekilis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:onClick="SonCekilis"
+                android:padding="20dp"
+                android:text="SON ÇEKİLİŞ SONUÇLARI"
+                android:textColor="#EEEEEE"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/btnAyarlar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/buttonshape"
+                android:onClick="Ayarlar"
+                android:padding="20dp"
+                android:text="AYARLAR"
+                android:textColor="#EEEEEE"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"></LinearLayout>
 
     </LinearLayout>
     <LinearLayout android:id="@+id/sign_in_bar"

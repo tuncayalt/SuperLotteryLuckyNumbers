@@ -1,6 +1,7 @@
 package com.tuncay.superlotteryluckynumbers.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -183,11 +184,17 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                     System.out.println("Could not parse " + nfe);
                 }
 
-                if (myNum < 3){
+                if (myNum < 1){
                     holder.tvSavedWin.setText("");
+                    holder.tvSavedWin.setTextColor(Color.parseColor("#000000"));
+                }
+                else if (myNum < 3){
+                    holder.tvSavedWin.setText(data[1] + " tuttu");
+                    holder.tvSavedWin.setTextColor(Color.parseColor("#000000"));
                 }
                 else{
                     holder.tvSavedWin.setText(data[1] + " tuttu!");
+                    holder.tvSavedWin.setTextColor(Color.parseColor("#EE0000"));
                 }
                 break;
             case TYPE_SEPARATOR:

@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 coupon.setLotteryTime(dateLottery);
                 coupon.setToRemind("T");
                 coupon.setServerCalled(false);
-                coupon.setWinCount(0);
+                coupon.setWinCount(-1);
                 coupon.setDeleted(false);
                 couponList.add(coupon);
 
