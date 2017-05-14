@@ -1,5 +1,6 @@
 package com.tuncay.superlotteryluckynumbers;
 
+import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,11 +36,14 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
     List<Coupon> coupons;
     ArrayList<SavedListElement> result;
     String userName;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.saved_coupons);
+
+        showProgress("Kaydedilmiş kuponlar gösteriyor...");
 
         lvSavedList = (ListView) findViewById(R.id.lvSavedList);
         adapter = new CustomSavedListAdapter(this);
@@ -58,6 +62,14 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         serverService = retrofit.create(IServerService.class);
 
         GetSavedCoupons();
+    }
+
+    private void showProgress(String message) {
+        progress = new ProgressDialog(this);
+        progress.setIndeterminate(true);
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setMessage(message);
+        progress.show();
     }
 
     private void GetSavedCoupons() {
@@ -116,6 +128,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
             if (realm.isInTransaction())
                 realm.cancelTransaction();
             e.printStackTrace();
+            progress.dismiss();
         }
 
     }
@@ -143,6 +156,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         }
 
         adapter.notifyDataSetChanged();
+        progress.dismiss();
     }
 
     @Override

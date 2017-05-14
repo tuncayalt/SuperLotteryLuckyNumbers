@@ -112,6 +112,8 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Şanslı Numara Bul"
+            android:background="@drawable/buttonshape"
+            android:textColor="#EEEEEE"
             android:onClick="Doldur"
             android:id="@+id/btnYeniNo" />
         <Button
@@ -119,20 +121,23 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Kendin Numara Gir"
+            android:background="@drawable/buttonshape"
+            android:textColor="#EEEEEE"
             android:onClick="NumPicker"
             android:id="@+id/btnBastan" />
     </LinearLayout>
 
-    <View
+    <!--<View
         android:layout_width="match_parent"
         android:layout_height="2dip"
         android:background="#FF00FF00"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"/>-->
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_weight="1"
         android:id="@+id/listView" />
 
@@ -163,6 +168,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Kazanırsam Haber Ver"
+            android:background="@drawable/buttonshape"
+            android:textColor="#EEEEEE"
             android:onClick="Kaydet"
             android:layout_weight="1"
             android:id="@+id/btnKaydet" />

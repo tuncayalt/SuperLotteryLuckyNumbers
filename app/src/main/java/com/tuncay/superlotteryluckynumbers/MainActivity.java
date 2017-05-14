@@ -1,6 +1,7 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
     List<Coupon> couponList;
     Realm realm;
+    ProgressDialog progress;
 
 
     @Override
@@ -107,9 +109,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         GetDates task = new GetDates();
         task.execute();
-
-
-
     }
 
     @Override
@@ -191,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             return;
         }
 
+        showProgress("Kuponları kaydediyor...");
+
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS.SSS");
 
         String date = sdf.format(new Date());
@@ -261,10 +263,19 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
     }
 
+    private void showProgress(String message) {
+        progress = new ProgressDialog(this);
+        progress.setIndeterminate(true);
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setMessage(message);
+        progress.show();
+    }
+
     private void goToSaved(String userName) {
         Intent intent = new Intent(this, SavedActivity.class);
         intent.putExtra("userName", userName);
         startActivity(intent);
+        progress.dismiss();
         finish();
     }
 
