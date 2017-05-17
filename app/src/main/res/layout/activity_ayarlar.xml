@@ -36,10 +36,12 @@
         android:gravity="center_horizontal"
         android:textColor="#EEEEEE"/>
 
-<Switch
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center_horizontal"/>
+    <Switch
+        android:id="@+id/swMesajIstek"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#EE3333"
+        android:layout_gravity="center_horizontal"/>
 
 
 </LinearLayout>

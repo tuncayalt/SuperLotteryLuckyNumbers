@@ -2,6 +2,7 @@ package com.tuncay.superlotteryluckynumbers.service;
 
 import com.tuncay.superlotteryluckynumbers.model.Cekilis;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
+import com.tuncay.superlotteryluckynumbers.model.User;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -28,4 +30,10 @@ public interface IServerService {
 
     @POST("coupon")
     Call<Boolean> insertCoupon(@Body List<Coupon> couponList);
+
+    @PUT("user/SaveToken")
+    Call<Boolean> updateUserToken(@Body User user);
+
+    @PUT("user/SaveUser")
+    Call<Boolean> updateUserMail(@Body User user);
 }

@@ -19,6 +19,10 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.MainListElement;
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     List<Coupon> couponList;
     Realm realm;
     ProgressDialog progress;
+    InterstitialAd mInterstitialAd;
 
 
     @Override
@@ -109,6 +114,21 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         GetDates task = new GetDates();
         task.execute();
+        MobileAds.initialize(this, "ca-app-pub-5819132225601729~6536327892");
+
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-5819132225601729/8013061097");
+        requestNewInterstitial();
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("B919CF34582CDFA602B3A23BBF6A5516")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 
     @Override
@@ -192,6 +212,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         showProgress("Kuponları kaydediyor...");
 
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                requestNewInterstitial();
+                goToSaved(userName);
+            }
+        });
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS.SSS");
 
@@ -218,23 +245,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 coupon.setWinCount(-1);
                 coupon.setDeleted(false);
                 couponList.add(coupon);
-
-                /*JSONObject couponJson = new JSONObject();
-                try {
-                    couponJson.put("CouponId", coupon.getCouponId());
-                    couponJson.put("User", coupon.getUser());
-                    couponJson.put("GameType", coupon.getGameType());
-                    couponJson.put("Numbers", coupon.getNumbers());
-                    couponJson.put("PlayTime", coupon.getPlayTime());
-                    couponJson.put("LotteryTime", coupon.getLotteryTime());
-                    couponJson.put("ToRemind", coupon.getToRemind());
-                    couponJson.put("ServerCalled", coupon.isServerCalled());
-                    couponJson.put("WinCount", coupon.getWinCount());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                couponJsonArr.put(couponJson);*/
             }
         }
         realm.beginTransaction();
@@ -252,12 +262,22 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                     }
                     realm.commitTransaction();
                 }
-                goToSaved(userName);
+                progress.dismiss();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    goToSaved(userName);
+                }
             }
 
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
-                goToSaved(userName);
+                progress.dismiss();
+                if (mInterstitialAd.isLoaded()) {
+                    mInterstitialAd.show();
+                } else {
+                    goToSaved(userName);
+                }
             }
         });
 
@@ -275,7 +295,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         Intent intent = new Intent(this, SavedActivity.class);
         intent.putExtra("userName", userName);
         startActivity(intent);
-        progress.dismiss();
         finish();
     }
 

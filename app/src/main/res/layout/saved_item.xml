@@ -8,7 +8,8 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Sil"
+        android:text=""
+        android:background="@drawable/sil"
         android:layout_gravity="center_vertical"
         android:layout_weight="15"
         android:id="@+id/btnSavedSil" />

@@ -11,6 +11,8 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.tuncay.superlotteryluckynumbers.model.Coupon;
+import com.tuncay.superlotteryluckynumbers.model.User;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,6 +31,12 @@ import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 import static com.google.android.gms.internal.zzt.TAG;
 
 /**
@@ -41,14 +49,17 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
     private FirebaseAuth mAuth;
     boolean error;
     HashMap<String, String> postDataParams;
-    String urlSaveToken = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/user/SaveToken";
-    String urlSaveUser = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/user/SaveUser";
+    String urlSaveToken = "user/SaveToken";
+    String urlSaveUser = "user/SaveUser";
+    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     String recentToken;
     String userMail;
     String prevToken;
     String prevUser;
+    String pushCekilis;
     Context context;
     FirebaseAuth.AuthStateListener mAuthListener;
+    private IServerService serverService;
 
     @Override
     public void onTokenRefresh() {
@@ -57,6 +68,12 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
 
     public MyFireBaseInstanceIDService() {
         this.context = this;
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(urlBase)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        serverService = retrofit.create(IServerService.class);
     }
 
     public void saveToken() {
@@ -76,13 +93,16 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         if (sharedPref != null){
             prevToken = sharedPref.getString("token", "");
             prevUser = sharedPref.getString("userMail", "");
+            pushCekilis = sharedPref.getString("pushCekilis", "RT");
+
         }
         else {
             prevToken = "";
             prevUser = "";
+            pushCekilis = "RT";
         }
 
-        if (!recentToken.equals(prevToken)){
+        if (!recentToken.equals(prevToken) || pushCekilis.substring(0,1).equals("D")){
             sendRegistrationToServer(urlSaveToken);
         }
     }
@@ -105,13 +125,15 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         if (sharedPref != null){
             prevToken = sharedPref.getString("token", "");
             prevUser = sharedPref.getString("userMail", "");
+            pushCekilis = sharedPref.getString("pushCekilis", "RT");
         }
         else {
             prevToken = "";
             prevUser = "";
+            pushCekilis = "RT";
         }
 
-        if (!userMail.equals(prevUser)){
+        if (!userMail.equals(prevUser) || pushCekilis.substring(0,1).equals("D")){
             sendRegistrationToServer(urlSaveUser);
         }
 
@@ -125,8 +147,49 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         postDataParams.put("user_mail", userMail);
         postDataParams.put("prev_user_mail", prevUser);
 
-        JsonPutTask task = new JsonPutTask();
-        task.execute(url);
+        User user = new User();
+        user.setPrev_token(prevToken);
+        user.setRecent_token(recentToken);
+        user.setUser_mail(userMail);
+        user.setPrev_user_mail(prevUser);
+        user.setPush_cekilis(pushCekilis);
+        user.setPush_win(pushCekilis);
+
+//        JsonPutTask task = new JsonPutTask();
+//        task.execute(url);
+
+        Call<Boolean> userCall;
+        if (url.equals(urlSaveUser)){
+            userCall = serverService.updateUserMail(user);
+        }else{
+            userCall = serverService.updateUserToken(user);
+        }
+
+        userCall.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful()){
+                    SharedPreferences sharedPref = context.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("token", recentToken);
+                    editor.putString("userMail", userMail);
+                    editor.putString("pushCekilis", pushCekilis.replace('D', 'R'));
+                    editor.apply();
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }else{
+                    Log.d(TAG, "Error on token change server update - false");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.d(TAG, "Error on token change server update - failure");
+            }
+        });
 
     }
 
