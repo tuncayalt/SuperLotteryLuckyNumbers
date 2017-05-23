@@ -2,24 +2,19 @@ package com.tuncay.superlotteryluckynumbers.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.tuncay.superlotteryluckynumbers.R;
-import com.tuncay.superlotteryluckynumbers.SavedActivity;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.TreeSet;
 
 import io.realm.Realm;
@@ -116,7 +111,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+        ViewHolder holder;
         int rowType = getItemViewType(position);
         holder = new ViewHolder();
         if (convertView == null) {
@@ -160,12 +155,12 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                                         realm.commitTransaction();
                                     }
                                     else{
-                                        Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                                        //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
                                     }
                                 }
                                 @Override
                                 public void onFailure(Call<Boolean> call, Throwable t) {
-                                    Log.d("CustomListAdapter", "response failure");
+                                    //Log.d("CustomListAdapter", "response failure");
                                 }
                             });
                         removeItem(position);
@@ -190,7 +185,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                 }
                 else if (myNum < 3){
                     holder.tvSavedWin.setText(data[1] + " tuttu");
-                    holder.tvSavedWin.setTextColor(Color.parseColor("#000000"));
+                    holder.tvSavedWin.setTextColor(Color.parseColor("#EEEEEE"));
                 }
                 else{
                     holder.tvSavedWin.setText(data[1] + " tuttu!");

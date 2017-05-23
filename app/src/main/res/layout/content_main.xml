@@ -112,7 +112,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"
             android:text="Şanslı Numara Bul"
-            android:background="@drawable/buttonshape"
+            android:background="@drawable/buttonshapeactive"
             android:textColor="#EEEEEE"
             android:onClick="Doldur"
             android:id="@+id/btnYeniNo" />
@@ -157,6 +157,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Tarihindeki çekilişe seçili sayıları oynadım."
+            android:textColor="#EEEEEE"
             android:id="@+id/txtOynadim"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
@@ -167,8 +168,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Kazanırsam Haber Ver"
-            android:background="@drawable/buttonshape"
+            android:text="Kaydet"
+            android:background="@drawable/buttonshapeactive"
             android:textColor="#EEEEEE"
             android:onClick="Kaydet"
             android:layout_weight="1"

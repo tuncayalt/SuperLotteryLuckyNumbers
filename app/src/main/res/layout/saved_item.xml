@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/layout_gradient"
     android:gravity="center_vertical" >
 
     <Button
@@ -19,18 +20,16 @@
         android:layout_width="0dp"
         android:layout_weight="65"
         android:layout_height="wrap_content"
-        android:background="#EEEEEE"
         android:gravity="center_vertical"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+        android:textColor="#EEEEEE" />
 
     <TextView
         android:id="@+id/tvSavedWin"
         android:layout_width="0dp"
         android:layout_weight="30"
         android:layout_height="wrap_content"
-        android:background="#EEEEEE"
         android:gravity="center_vertical"
         android:padding="5dp"
         android:textAppearance="?android:attr/textAppearanceLarge"

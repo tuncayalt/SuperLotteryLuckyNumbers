@@ -22,7 +22,7 @@
         android:id="@+id/txtCekilisTarihi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FE2D2B"
+        android:textColor="#9B59B6"
         android:textSize="35dp"
         android:text=""
         />

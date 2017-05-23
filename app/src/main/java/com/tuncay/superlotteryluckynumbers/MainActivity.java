@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
         array_spinner = new ArrayList<>();
         spinnerAdapter = new ArrayAdapter<>(this,
-                R.layout.support_simple_spinner_dropdown_item, array_spinner);
+                R.layout.spinner_item, array_spinner);
         s = (Spinner) findViewById(R.id.spnDate);
         s.setAdapter(spinnerAdapter);
 
@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
         final String userName = getIntent().getStringExtra("userMail");
         if (userName == null || userName.isEmpty()){
-            Toast.makeText(this, "Kuponlarınızı kaydedebilmek için ana sayfadan giriş yapın.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Kuponlarınızı kaydedebilmek için ana sayfadan Google hesabınızla giriş yapın.", Toast.LENGTH_LONG).show();
             return;
         }
 

@@ -6,13 +6,14 @@
     android:orientation="vertical"
     tools:context="com.tuncay.superlotteryluckynumbers.MenuActivity">
 
-    <LinearLayout android:orientation="vertical"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/layout_gradient"
-        android:padding="20dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/buttonshape"
+                android:background="#C0392B"
+                android:drawableLeft="@drawable/clover"
                 android:onClick="SevdigimKelimeAl"
                 android:padding="20dp"
                 android:text="ŞANSLI NUMARA BUL"
@@ -37,7 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/buttonshape"
+                android:background="#16A085"
+                android:drawableLeft="@drawable/kuponlarim"
                 android:onClick="Kuponlarim"
                 android:padding="20dp"
                 android:text="KUPONLARIM"
@@ -57,7 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/buttonshape"
+                android:background="#2980B9"
+                android:drawableLeft="@drawable/top"
                 android:onClick="SonCekilis"
                 android:padding="20dp"
                 android:text="SON ÇEKİLİŞ SONUÇLARI"
@@ -69,7 +73,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/buttonshape"
+                android:background="#9B59B6"
+                android:drawableLeft="@android:drawable/ic_menu_preferences"
                 android:onClick="Ayarlar"
                 android:padding="20dp"
                 android:text="AYARLAR"
@@ -82,55 +87,76 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal">
+
+
+        </LinearLayout>
 
     </LinearLayout>
-    <LinearLayout android:id="@+id/sign_in_bar"
-        android:layout_height="wrap_content"
+
+        <!--ca-app-pub-5819132225601729/7681010296-->
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adBannerView"
         android:layout_width="match_parent"
-        android:background="#461EC5"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_gravity="bottom"
-        android:padding="10dp">
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/btnGoogle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Şanslı numaralarınızı kaydedebilmek için giriş yapın"
-            android:layout_marginLeft="10dp"
-            android:textColor="#EEEEEE" />
-    </LinearLayout>
-
-    <LinearLayout android:id="@+id/sign_out_bar"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:background="#461EC5"
-        android:orientation="horizontal"
-        android:gravity="center|right"
-        android:layout_gravity="bottom"
-        android:padding="10dp">
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="ca-app-pub-5819132225601729/7681010296">
+    </com.google.android.gms.ads.AdView>
 
-        <TextView android:layout_width="0dp"
-            android:layout_weight="1"
+        <LinearLayout
+            android:id="@+id/sign_in_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Google ile kullanıcı girişi yaptınız"
-            android:layout_marginRight="10dp"
-            android:textColor="#EEEEEE" />
+            android:layout_gravity="bottom"
+            android:background="#461EC5"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
-        <Button
-            android:id="@+id/btnSignOut"
-            android:layout_width="wrap_content"
+            <com.google.android.gms.common.SignInButton
+                android:id="@+id/btnGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="Şanslı numaralarınızı kaydedebilmek için giriş yapın"
+                android:textColor="#EEEEEE" />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/sign_out_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/buttonshape"
-            android:textColor="#EEEEEE"
-            android:text="Çıkış"
-            android:textSize="12sp" />
-    </LinearLayout>
+            android:layout_gravity="bottom"
+            android:background="#461EC5"
+            android:gravity="center|right"
+            android:orientation="horizontal"
+            android:padding="10dp">
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                android:text="Google ile kullanıcı girişi yaptınız"
+                android:textColor="#EEEEEE" />
+
+            <Button
+                android:id="@+id/btnSignOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/buttonshape"
+                android:text="Çıkış"
+                android:textColor="#EEEEEE"
+                android:textSize="12sp" />
+        </LinearLayout>
 </LinearLayout>

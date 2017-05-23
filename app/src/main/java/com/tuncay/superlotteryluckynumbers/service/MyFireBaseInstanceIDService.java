@@ -78,7 +78,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
 
     public void saveToken() {
         recentToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(REG_TOKEN, recentToken);
+        //Log.d(REG_TOKEN, recentToken);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -110,7 +110,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
     public void saveUserMail(Context context) {
         this.context = context;
         recentToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(REG_TOKEN, recentToken);
+        //Log.d(REG_TOKEN, recentToken);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -181,13 +181,13 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
                         e.printStackTrace();
                     }
                 }else{
-                    Log.d(TAG, "Error on token change server update - false");
+                    //Log.d(TAG, "Error on token change server update - false");
                 }
             }
 
             @Override
             public void onFailure(Call<Boolean> call, Throwable t) {
-                Log.d(TAG, "Error on token change server update - failure");
+                //Log.d(TAG, "Error on token change server update - failure");
             }
         });
 
@@ -206,7 +206,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
             con.setReadTimeout(60000); //60 secs
             con.setRequestProperty("Content-Type", "application/json");
         }catch(Exception e){
-            Log.d("FirebaseService", "connection i/o failed" );
+            //Log.d("FirebaseService", "connection i/o failed" );
         }
 
 
@@ -281,7 +281,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         @Override
         protected void onPostExecute(String result) {
             if (error){
-                Log.d(TAG, "Error on token change server update");
+                //Log.d(TAG, "Error on token change server update");
             }else {
                 SharedPreferences sharedPref = context.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();

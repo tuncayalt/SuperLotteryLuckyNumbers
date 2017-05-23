@@ -12,35 +12,46 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Şanslı kelimeniz?"
-        android:textSize="20dp"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
         android:layout_gravity="center_horizontal"
         android:textColor="#EEEEEE"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textColor="#EE3333"
-        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:textColor="#9B59B6"
+        android:layout_marginTop="5dp"
         android:layout_gravity="center_horizontal"
         android:id="@+id/edtSevdigimKelimeAyarlar"
         />
 
-    <TextView
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dip"
+        android:background="#777777"
+        android:layout_margin="15dp"/>
+
+<!--    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Çekiliş sonrası sonucu haber almak istiyorum?"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
-        android:textColor="#EEEEEE"/>
+        android:textColor="#EEEEEE"/>-->
 
     <Switch
         android:id="@+id/swMesajIstek"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#EE3333"
+        android:textColor="#EEEEEE"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:text="Çekiliş sonrası sonucu haber almak istiyorum"
+        android:textSize="20sp"
         android:layout_gravity="center_horizontal"/>
 
 

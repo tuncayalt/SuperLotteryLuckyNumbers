@@ -1,20 +1,27 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -32,6 +39,8 @@ import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -58,6 +67,21 @@ public class MenuActivity extends AppCompatActivity {
     private String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     private IServerService serverService;
     private Coupon couponToDelete;
+    private String[] firstInfoStrings = {
+            "- Google hesabınızla uygulamaya giriş yapın\n" +
+            "- Süper Loto için kendi şanslı numaralarınızı üretin\n" +
+            "- Şanslı numaralarınızı kaydedin\n" +
+            "- Çekiliş sonrası sonuçları telefonunuza gönderelim!\n",
+            "Şanslı Numara Bul ekranından\n" +
+            "- Şanslı kelimeniz yardımıyla numaralarınızı üretin\n" +
+            "veya\n" +
+            "- Şanslı numaralarınızı kendiniz girin\n",
+            "- Numaralarınızı girdikten sonra\n" +
+            "- Kaydedilecek olanları seçin\n" +
+            "- Çekiliş tarihini seçin\n" +
+            "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin"
+    };
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,7 +172,101 @@ public class MenuActivity extends AppCompatActivity {
 
         serverService = retrofit.create(IServerService.class);
 
+        MobileAds.initialize(this, "ca-app-pub-5819132225601729~6536327892");
+        loadBannerAd();
+
+        showFirstInfoDialog();
+
     }
+
+    private void loadBannerAd() {
+        mAdView = (AdView) findViewById(R.id.adBannerView);
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("B919CF34582CDFA602B3A23BBF6A5516")
+                .build();
+        mAdView.loadAd(adRequest);
+    }
+
+    private void showFirstInfoDialog() {
+        SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
+        boolean firstInfoDialogShow = sPref.getBoolean("firstInfoDialogShow", true);
+        if (!firstInfoDialogShow) {
+            return;
+        }
+
+        final Dialog d = new Dialog(this);
+        d.setTitle("Uygulama Kullanımı");
+        d.setContentView(R.layout.first_info_dialog);
+        d.setCanceledOnTouchOutside(false);
+
+        final Button btnFirstInfoSonraki = (Button) d.findViewById(R.id.btnFirstInfoSonraki);
+        Button btnFirstInfoSkip = (Button) d.findViewById(R.id.btnFirstInfoSkip);
+        final TextView tvFirstInfoInfo = (TextView) d.findViewById(R.id.tvFirstInfoInfo);
+        final CheckBox cbFirstInfoGosterme = (CheckBox) d.findViewById(R.id.cbFirstInfoGosterme);
+
+        d.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode,
+                                 KeyEvent event) {
+                // TODO Auto-generated method stub
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sPref.edit();
+                    editor.putInt("firstInfoCurrentPage", 0);
+                    editor.putBoolean("firstInfoDialogShow", !cbFirstInfoGosterme.isChecked());
+                    editor.apply();
+                    d.dismiss();
+                }
+                return true;
+            }
+        });
+
+        NextInfo(tvFirstInfoInfo, d, btnFirstInfoSonraki, cbFirstInfoGosterme, false);
+
+        btnFirstInfoSonraki.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NextInfo(tvFirstInfoInfo, d, btnFirstInfoSonraki, cbFirstInfoGosterme, true);
+            }
+        });
+        btnFirstInfoSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sPref.edit();
+                editor.putInt("firstInfoCurrentPage", 0);
+                editor.putBoolean("firstInfoDialogShow", !cbFirstInfoGosterme.isChecked());
+                editor.apply();
+                d.dismiss();
+            }
+        });
+        d.show();
+
+    }
+
+    private void NextInfo(TextView tvFirstInfoInfo, Dialog d, Button btnFirstInfoSonraki, CheckBox cbFirstInfoGosterme, boolean getFirstInfoCurrentPage) {
+        SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
+        int firstInfoCurrentPage;
+        if (getFirstInfoCurrentPage){
+            firstInfoCurrentPage = sPref.getInt("firstInfoCurrentPage", 0) % firstInfoStrings.length;
+        }else {
+            firstInfoCurrentPage = 0;
+        }
+
+        tvFirstInfoInfo.setText(firstInfoStrings[firstInfoCurrentPage]);
+        if (btnFirstInfoSonraki.getText().equals("Bitti")) {
+            d.dismiss();
+        }else if (firstInfoCurrentPage == firstInfoStrings.length - 1){
+            btnFirstInfoSonraki.setText("Bitti");
+        }else {
+            btnFirstInfoSonraki.setText("Sonraki");
+        }
+        SharedPreferences.Editor editor = sPref.edit();
+        editor.putInt("firstInfoCurrentPage", ++firstInfoCurrentPage);
+        editor.putBoolean("firstInfoDialogShow", !cbFirstInfoGosterme.isChecked());
+        editor.apply();
+    }
+
 
     private void syncServer(String userMail) {
         realm = Realm.getDefaultInstance();
@@ -169,12 +287,12 @@ public class MenuActivity extends AppCompatActivity {
                             realm.commitTransaction();
                         }
                         else{
-                            Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                            //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
                         }
                     }
                     @Override
                     public void onFailure(Call<Boolean> call, Throwable t) {
-                        Log.d("CustomListAdapter", "response failure");
+                        //Log.d("CustomListAdapter", "response failure");
                     }
                 });
             }
@@ -279,20 +397,20 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+        //Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+                        //Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
 
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
+                            //Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(MenuActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }

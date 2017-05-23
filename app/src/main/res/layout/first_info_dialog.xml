@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/layout_gradient"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    >
+
+    <TextView
+        android:id="@+id/tvFirstInfoHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Süper Loto Şanslı Numara"
+        android:textSize="30sp"
+        android:gravity="center_horizontal"
+        android:textColor="#AA3333"/>
+
+    <TextView
+        android:id="@+id/tvFirstInfoInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textSize="16sp"
+        android:textColor="#EEEEEE"
+        android:text="" />
+
+    <CheckBox
+        android:id="@+id/cbFirstInfoGosterme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bir daha gösterme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp">
+    <Button
+        android:id="@+id/btnFirstInfoSkip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttonshape"
+        android:layout_weight="1"
+        android:text="Kapat" />
+    <Button
+        android:id="@+id/btnFirstInfoSonraki"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/buttonshapeactive"
+        android:layout_weight="1"
+        android:text="" />
+</LinearLayout>
+</LinearLayout>

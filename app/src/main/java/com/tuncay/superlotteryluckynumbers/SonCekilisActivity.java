@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -74,7 +73,6 @@ public class SonCekilisActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            Log.d(TAG, " pre execute async");
             progress = new ProgressDialog(SonCekilisActivity.this);
             progress.setIndeterminate(true);
             progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -156,7 +154,7 @@ public class SonCekilisActivity extends AppCompatActivity {
                 txtCekilisTarihi.setText(tarihView);
             }
             catch (final JSONException e) {
-                Log.e(TAG, "Json parsing error: " + e.getMessage());
+                //Log.e(TAG, "Json parsing error: " + e.getMessage());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
