@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "730265778713-o1s2qcoklngj3ctko6k8b31c59j8a72j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tuncay.superlotteryluckynumbers",
+            "certificate_hash": "48d4364a87fe1d8fedfc35f723d5531a171f081e"
+          }
+        },
+        {
           "client_id": "730265778713-qhngee2es8jaet5c7mqptb2538hpcsgb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

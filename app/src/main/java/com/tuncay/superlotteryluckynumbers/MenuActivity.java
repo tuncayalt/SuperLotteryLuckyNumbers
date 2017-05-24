@@ -390,8 +390,8 @@ public class MenuActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                // Google Sign In failed, update UI appropriately
-                // ...
+                Toast.makeText(MenuActivity.this, "Google sign-in hatası: " + result.getStatus().getStatusMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
