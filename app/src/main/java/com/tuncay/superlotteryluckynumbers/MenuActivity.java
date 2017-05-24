@@ -135,7 +135,7 @@ public class MenuActivity extends AppCompatActivity {
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(BuildConfig.DEBUG ? getString(R.string.default_web_client_id) : "730265778713-2mdufhs33m3t71i9at1oo36abbmbmdkd.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -390,7 +390,8 @@ public class MenuActivity extends AppCompatActivity {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-                Toast.makeText(MenuActivity.this, "Google sign-in hatası: " + result.getStatus().getStatusMessage(),
+                Toast.makeText(MenuActivity.this, "Google sign-in hatası: " + result.getStatus().getStatusCode()
+                                + "-" + result.getStatus().getStatusMessage() + "-" + result.toString(),
                         Toast.LENGTH_SHORT).show();
             }
         }
