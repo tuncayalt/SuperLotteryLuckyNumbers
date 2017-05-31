@@ -135,7 +135,7 @@ public class MenuActivity extends AppCompatActivity {
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(BuildConfig.DEBUG ? getString(R.string.default_web_client_id) : "730265778713-2mdufhs33m3t71i9at1oo36abbmbmdkd.apps.googleusercontent.com")
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
