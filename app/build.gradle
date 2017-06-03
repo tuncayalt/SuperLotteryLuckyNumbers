@@ -3,13 +3,12 @@ apply plugin: 'realm-android'
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.3'
-
     defaultConfig {
         applicationId "com.tuncay.superlotteryluckynumbers"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 9
-        versionName "1.0.9"
+        versionCode 10
+        versionName "1.0.10"
     }
     buildTypes {
         release {
@@ -17,10 +16,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.google.firebase:firebase-core:10.2.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'

@@ -29,6 +29,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -133,9 +134,10 @@ public class MenuActivity extends AppCompatActivity {
         mGoogleButton = (SignInButton) findViewById(R.id.btnGoogle);
         mLogoutBtn = (Button) findViewById(R.id.btnSignOut);
 
+        String webClientId = getString(R.string.default_web_client_id);
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(webClientId)
                 .requestEmail()
                 .build();
 
@@ -385,6 +387,12 @@ public class MenuActivity extends AppCompatActivity {
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            boolean res = result.isSuccess();
+            Status status = result.getStatus();
+            String msg = status.getStatusMessage();
+            int code = status.getStatusCode();
+
+            result.getSignInAccount();
             if (result.isSuccess()) {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = result.getSignInAccount();
