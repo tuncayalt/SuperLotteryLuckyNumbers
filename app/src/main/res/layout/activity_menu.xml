@@ -83,14 +83,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal">
 
-
-        </LinearLayout>
 
     </LinearLayout>
 
@@ -101,62 +94,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
         ads:adSize="SMART_BANNER"
         ads:adUnitId="ca-app-pub-5819132225601729/7681010296">
     </com.google.android.gms.ads.AdView>
 
-        <LinearLayout
-            android:id="@+id/sign_in_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#461EC5"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/btnGoogle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:text="Şanslı numaralarınızı kaydedebilmek için giriş yapın"
-                android:textColor="#EEEEEE" />
-        </LinearLayout>
-
-
-
-        <LinearLayout
-            android:id="@+id/sign_out_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="#461EC5"
-            android:gravity="center|right"
-            android:orientation="horizontal"
-            android:padding="10dp">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:text="Google ile kullanıcı girişi yaptınız"
-                android:textColor="#EEEEEE" />
-
-            <Button
-                android:id="@+id/btnSignOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/buttonshape"
-                android:text="Çıkış"
-                android:textColor="#EEEEEE"
-                android:textSize="12sp" />
-        </LinearLayout>
 </LinearLayout>

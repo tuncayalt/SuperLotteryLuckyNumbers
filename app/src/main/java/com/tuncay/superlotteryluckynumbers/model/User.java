@@ -7,8 +7,7 @@ package com.tuncay.superlotteryluckynumbers.model;
 public class User {
     private String prev_token;
     private String recent_token;
-    private String user_mail;
-    private String prev_user_mail;
+    private String user_id;
     private String push_cekilis;
     private String push_win;
 
@@ -32,20 +31,12 @@ public class User {
         this.recent_token = recent_token;
     }
 
-    public String getUser_mail() {
-        return user_mail;
+    public String getUser_id() {
+        return user_id;
     }
 
-    public void setUser_mail(String user_mail) {
-        this.user_mail = user_mail;
-    }
-
-    public String getPrev_user_mail() {
-        return prev_user_mail;
-    }
-
-    public void setPrev_user_mail(String prev_user_mail) {
-        this.prev_user_mail = prev_user_mail;
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
     }
 
     public String getPush_cekilis() {

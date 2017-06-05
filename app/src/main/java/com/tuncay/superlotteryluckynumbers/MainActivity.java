@@ -204,11 +204,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             Toast.makeText(this, "Henüz bir kupon oluşturmadınız.", Toast.LENGTH_LONG).show();
             return;
         }
-        final String userName = getIntent().getStringExtra("userMail");
-        if (userName == null || userName.isEmpty()){
-            Toast.makeText(this, "Kuponlarınızı kaydedebilmek için ana sayfadan Google hesabınızla giriş yapın.", Toast.LENGTH_LONG).show();
-            return;
-        }
+        final String userId = getIntent().getStringExtra("userId");
 
         showProgress("Kuponları kaydediyor...");
 
@@ -216,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             @Override
             public void onAdClosed() {
                 requestNewInterstitial();
-                goToSaved(userName);
+                goToSaved(userId);
             }
         });
 
@@ -235,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
 
                 Coupon coupon = new Coupon();
                 coupon.setCouponId(java.util.UUID.randomUUID().toString());
-                coupon.setUser(userName);
+                coupon.setUser(userId);
                 coupon.setGameType("Sup");
                 coupon.setNumbers(li.getNumString());
                 coupon.setPlayTime(date);
@@ -266,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
                 } else {
-                    goToSaved(userName);
+                    goToSaved(userId);
                 }
             }
 
@@ -276,7 +272,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 if (mInterstitialAd.isLoaded()) {
                     mInterstitialAd.show();
                 } else {
-                    goToSaved(userName);
+                    goToSaved(userId);
                 }
             }
         });
@@ -291,9 +287,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         progress.show();
     }
 
-    private void goToSaved(String userName) {
+    private void goToSaved(String userId) {
         Intent intent = new Intent(this, SavedActivity.class);
-        intent.putExtra("userName", userName);
+        intent.putExtra("userId", userId);
         startActivity(intent);
         finish();
     }

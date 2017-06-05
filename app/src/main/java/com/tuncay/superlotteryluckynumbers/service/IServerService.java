@@ -33,7 +33,4 @@ public interface IServerService {
 
     @PUT("user/SaveToken")
     Call<Boolean> updateUserToken(@Body User user);
-
-    @PUT("user/SaveUser")
-    Call<Boolean> updateUserMail(@Body User user);
 }

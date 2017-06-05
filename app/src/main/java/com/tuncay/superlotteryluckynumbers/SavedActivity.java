@@ -35,7 +35,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
     IServerService serverService;
     List<Coupon> coupons;
     ArrayList<SavedListElement> result;
-    String userName;
+    String userId;
     ProgressDialog progress;
 
     @Override
@@ -50,7 +50,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         lvSavedList.setAdapter(adapter);
         adapter.setListener(this);
 
-        userName = SavedActivity.this.getIntent().getStringExtra("userName");
+        userId = SavedActivity.this.getIntent().getStringExtra("userId");
 
         Realm.init(this);
 
@@ -82,13 +82,13 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
             SharedPreferences shaPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
             long couponsLastTime = shaPref.getLong("couponsLastTime", 0);
 
-            if (System.currentTimeMillis() - couponsLastTime > 60000){
+            if (System.currentTimeMillis() - couponsLastTime > 120000){
                 SharedPreferences sharedPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putLong("couponsLastTime", System.currentTimeMillis());
                 editor.apply();
 
-                Call<List<Coupon>> couponsCall = serverService.getCoupons(userName);
+                Call<List<Coupon>> couponsCall = serverService.getCoupons(userId);
                 couponsCall.enqueue(new Callback<List<Coupon>>() {
                     @Override
                     public void onResponse(Call<List<Coupon>> call, Response<List<Coupon>> response) {
@@ -110,18 +110,18 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
                                 realm.commitTransaction();
                             }
                         }
-                        getCouponsFromLocalDb(userName);
+                        getCouponsFromLocalDb(userId);
                     }
                     @Override
                     public void onFailure(Call<List<Coupon>> call, Throwable t) {
                         Toast.makeText(SavedActivity.this, "Kuponlar sunucudan alınamadı, İnternet bağlantınızı kontrol edin.",
                                 Toast.LENGTH_SHORT).show();
-                        getCouponsFromLocalDb(userName);
+                        getCouponsFromLocalDb(userId);
                     }
                 });
             }
             else {
-                getCouponsFromLocalDb(userName);
+                getCouponsFromLocalDb(userId);
             }
 
         } catch (IllegalArgumentException e) {
@@ -133,8 +133,8 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
 
     }
 
-    public void getCouponsFromLocalDb(String userName) {
-        RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userName).equalTo("isDeleted", false).findAllSorted("playTime", Sort.DESCENDING);
+    public void getCouponsFromLocalDb(String userId) {
+        RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).findAllSorted("playTime", Sort.DESCENDING);
 
         if (couponRealmResults != null && !couponRealmResults.isEmpty()){
             for (Coupon coupon : couponRealmResults) {
