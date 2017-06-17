@@ -50,7 +50,8 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         lvSavedList.setAdapter(adapter);
         adapter.setListener(this);
 
-        userId = SavedActivity.this.getIntent().getStringExtra("userId");
+        SharedPreferences sharedPref = this.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
+        userId = sharedPref.getString("userId", "");
 
         Realm.init(this);
 

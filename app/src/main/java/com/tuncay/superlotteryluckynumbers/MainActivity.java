@@ -64,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     IServerService serverService;
 
     List<Coupon> couponList;
+    List<Coupon> managedCouponList;
+    String userId;
     Realm realm;
     ProgressDialog progress;
     InterstitialAd mInterstitialAd;
@@ -204,7 +206,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             Toast.makeText(this, "Henüz bir kupon oluşturmadınız.", Toast.LENGTH_LONG).show();
             return;
         }
-        final String userId = getIntent().getStringExtra("userId");
+
+        SharedPreferences sharedPref = this.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
+        userId = sharedPref.getString("userId", "");
 
         showProgress("Kuponları kaydediyor...");
 
@@ -244,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             }
         }
         realm.beginTransaction();
-        realm.copyToRealm(couponList);
+        managedCouponList = realm.copyToRealm(couponList);
         realm.commitTransaction();
 
         Call<Boolean> couponsCall = serverService.insertCoupon(couponList);
@@ -252,11 +256,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response.isSuccessful()){
+                    realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
-                    for (Coupon coupon: couponList) {
+                    for (Coupon coupon: managedCouponList) {
                         coupon.setServerCalled(true);
                     }
                     realm.commitTransaction();
+                    realm.refresh();
                 }
                 progress.dismiss();
                 if (mInterstitialAd.isLoaded()) {

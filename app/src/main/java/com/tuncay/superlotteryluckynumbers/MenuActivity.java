@@ -1,9 +1,12 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -14,12 +17,23 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.gson.Gson;
+import com.tuncay.superlotteryluckynumbers.model.Cekilis;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
+import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.util.Arrays;
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -51,6 +65,8 @@ public class MenuActivity extends AppCompatActivity {
             "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin"
     };
     private AdView mAdView;
+    List<Coupon> notSyncedCouponList;
+    RealmResults<Coupon> notSyncedAddedRealmResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +77,6 @@ public class MenuActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_menu);
-
-
-        /*
-        Bunları ara ara çalıştır
-        MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
-        fireBaseInstanceIDService.saveUserMail(MenuActivity.this);
-        syncServer(firebaseAuth.getCurrentUser().getEmail());*/
 
         Realm.init(this);
         Retrofit retrofit = new Retrofit.Builder()
@@ -175,11 +184,48 @@ public class MenuActivity extends AppCompatActivity {
 
 
     private void syncServer() {
-        realm = Realm.getDefaultInstance();
-        RealmResults<Coupon> notSyncedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", false).findAll();
+        SyncDeleted();
+        SyncAdded();
+    }
 
-        if (notSyncedRealmResults != null && !notSyncedRealmResults.isEmpty()){
-            for (Coupon coupon : notSyncedRealmResults) {
+    private void SyncAdded() {
+        realm = Realm.getDefaultInstance();
+        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", false).findAll();
+        notSyncedCouponList = realm.copyFromRealm(notSyncedAddedRealmResults);
+        if (notSyncedCouponList != null && !notSyncedCouponList.isEmpty()){
+            final Call<Boolean> couponsAddCall = serverService.insertCoupon(notSyncedCouponList);
+            couponsAddCall.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    if (response.isSuccessful()){
+                        realm = Realm.getDefaultInstance();
+                        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", false).findAll();
+                        realm.beginTransaction();
+                        for (Coupon coupon : notSyncedAddedRealmResults) {
+                            coupon.setServerCalled(true);
+                        }
+                        realm.commitTransaction();
+                        realm.refresh();
+                    }
+                    else{
+                        //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                    }
+                }
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                    //Log.d("CustomListAdapter", "response failure");
+                }
+            });
+
+        }
+    }
+
+    private void SyncDeleted() {
+        realm = Realm.getDefaultInstance();
+        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", false).findAll();
+
+        if (notSyncedDeletedRealmResults != null && !notSyncedDeletedRealmResults.isEmpty()){
+            for (Coupon coupon : notSyncedDeletedRealmResults) {
                 this.couponToDelete = coupon;
                 String couponIdToDelete = coupon.getCouponId();
                 Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
@@ -191,6 +237,7 @@ public class MenuActivity extends AppCompatActivity {
                             realm.beginTransaction();
                             couponToDelete.setServerCalled(true);
                             realm.commitTransaction();
+                            realm.refresh();
                         }
                         else{
                             //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
@@ -208,7 +255,21 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        syncServer();
+        if (userId.equals(""))
+            return;
+        ServerSyncTask task = new ServerSyncTask();
+        task.execute();
+    }
+
+    private class ServerSyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            MyFireBaseInstanceIDService fireBaseInstanceIDService = new MyFireBaseInstanceIDService();
+            fireBaseInstanceIDService.saveUser(MenuActivity.this);
+            syncServer();
+            return "";
+        }
     }
 
     public void SevdigimKelimeAl(View view){

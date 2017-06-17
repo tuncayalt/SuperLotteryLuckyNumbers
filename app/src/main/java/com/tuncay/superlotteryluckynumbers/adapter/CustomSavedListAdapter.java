@@ -143,6 +143,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                             couponToDelete.setDeleted(true);
                             couponToDelete.setServerCalled(false);
                             realm.commitTransaction();
+                            realm.refresh();
 
                             Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
                             couponDeleteCall.enqueue(new Callback<Boolean>() {
@@ -153,6 +154,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                                         realm.beginTransaction();
                                         couponToDelete.setServerCalled(true);
                                         realm.commitTransaction();
+                                        realm.refresh();
                                     }
                                     else{
                                         //Log.d("CustomListAdapter", "response unsuccessful" + response.code());

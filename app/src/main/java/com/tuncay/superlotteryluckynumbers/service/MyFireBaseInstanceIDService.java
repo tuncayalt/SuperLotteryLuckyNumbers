@@ -7,6 +7,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.tuncay.superlotteryluckynumbers.model.User;
 
+import java.net.URL;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -16,6 +18,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
 
     String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+    String urlSaveToken = "user/SaveToken";
+    String urlSaveUser = "user/SaveUser";
+
     String recentToken;
     String userId;
     String prevToken;
@@ -62,14 +67,32 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString("token", recentToken);
         editor.putString("userId", userId);
-        editor.apply();
+        editor.commit();
 
         if (!recentToken.equals(prevToken) || pushCekilis.substring(0, 1).equals("D")) {
-            sendRegistrationToServer();
+            sendRegistrationToServer(urlSaveToken);
         }
     }
 
-    public void sendRegistrationToServer() {
+    public void saveUser(Context context) {
+        this.context = context;
+
+        SharedPreferences sharedPref = context.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
+        pushCekilis = sharedPref.getString("pushCekilis", "RT");
+        userId = sharedPref.getString("userId", "");
+        boolean sentToServer = sharedPref.getBoolean("sentToServer", false);
+
+        if ((!sentToServer && !userId.equals("")) || pushCekilis.substring(0,1).equals("D")){
+            recentToken = FirebaseInstanceId.getInstance().getToken();
+            prevToken = sharedPref.getString("token", "");
+            if (!userId.equals(""))
+                sendRegistrationToServer(urlSaveUser);
+        }
+
+    }
+
+
+    public void sendRegistrationToServer(String url) {
 
         User user = new User();
         user.setPrev_token(prevToken);
@@ -79,7 +102,12 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         user.setPush_win(pushCekilis);
 
         Call<Boolean> userCall;
-        userCall = serverService.updateUserToken(user);
+        if (url.equals(urlSaveUser)){
+            userCall = serverService.updateUser(user);
+        }else{
+            userCall = serverService.updateUserToken(user);
+        }
+
         userCall.enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
@@ -88,6 +116,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("token", recentToken);
                     editor.putString("pushCekilis", pushCekilis.replace('D', 'R'));
+                    editor.putBoolean("sentToServer", true);
                     editor.apply();
                 } else {
 
