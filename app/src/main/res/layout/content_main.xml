@@ -16,15 +16,6 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
-    <!--<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Şanslı Numaralarım"
-        android:textColor="#EEEEEE"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/tvSansliNumaralar" />-->
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -126,6 +117,14 @@
             android:onClick="NumPicker"
             android:id="@+id/btnBastan" />
     </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kupondan Al"
+        android:background="@drawable/buttonshape"
+        android:textColor="#EEEEEE"
+        android:onClick="KupondanAl"
+        android:id="@+id/btnKupondanAl" />
 
     <!--<View
         android:layout_width="match_parent"
