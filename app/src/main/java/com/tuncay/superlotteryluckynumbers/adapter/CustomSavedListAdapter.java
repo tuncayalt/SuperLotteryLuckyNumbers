@@ -141,7 +141,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                                     .equalTo("couponId", couponIdToDelete).findFirst();
                             realm.beginTransaction();
                             couponToDelete.setDeleted(true);
-                            couponToDelete.setServerCalled(false);
+                            couponToDelete.setServerCalled("F");
                             realm.commitTransaction();
                             realm.refresh();
 
@@ -152,7 +152,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                                     if (response.isSuccessful()){
                                         realm = Realm.getDefaultInstance();
                                         realm.beginTransaction();
-                                        couponToDelete.setServerCalled(true);
+                                        couponToDelete.setServerCalled("T");
                                         realm.commitTransaction();
                                         realm.refresh();
                                     }

@@ -16,7 +16,7 @@ public class Coupon extends RealmObject{
     private String playTime;
     private String lotteryTime;
     private String toRemind;
-    private boolean serverCalled;
+    private String serverCalled;
     private int winCount;
     private boolean isDeleted;
 
@@ -24,14 +24,14 @@ public class Coupon extends RealmObject{
 
     }
 
-
-    public boolean isServerCalled() {
+    public String getServerCalled() {
         return serverCalled;
     }
 
-    public void setServerCalled(boolean serverCalled) {
+    public void setServerCalled(String serverCalled) {
         this.serverCalled = serverCalled;
     }
+
     public String getCouponId() {
         return couponId;
     }

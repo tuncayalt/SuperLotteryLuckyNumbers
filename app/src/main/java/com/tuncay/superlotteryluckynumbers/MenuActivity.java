@@ -190,7 +190,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void SyncAdded() {
         realm = Realm.getDefaultInstance();
-        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", false).findAll();
+        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", "F").findAll();
         notSyncedCouponList = realm.copyFromRealm(notSyncedAddedRealmResults);
         if (notSyncedCouponList != null && !notSyncedCouponList.isEmpty()){
             final Call<Boolean> couponsAddCall = serverService.insertCoupon(notSyncedCouponList);
@@ -199,10 +199,10 @@ public class MenuActivity extends AppCompatActivity {
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                     if (response.isSuccessful()){
                         realm = Realm.getDefaultInstance();
-                        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", false).findAll();
+                        notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", "F").findAll();
                         realm.beginTransaction();
                         for (Coupon coupon : notSyncedAddedRealmResults) {
-                            coupon.setServerCalled(true);
+                            coupon.setServerCalled("T");
                         }
                         realm.commitTransaction();
                         realm.refresh();
@@ -222,7 +222,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void SyncDeleted() {
         realm = Realm.getDefaultInstance();
-        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", false).findAll();
+        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
 
         if (notSyncedDeletedRealmResults != null && !notSyncedDeletedRealmResults.isEmpty()){
             for (Coupon coupon : notSyncedDeletedRealmResults) {
@@ -235,7 +235,7 @@ public class MenuActivity extends AppCompatActivity {
                         if (response.isSuccessful()){
                             realm = Realm.getDefaultInstance();
                             realm.beginTransaction();
-                            couponToDelete.setServerCalled(true);
+                            couponToDelete.setServerCalled("T");
                             realm.commitTransaction();
                             realm.refresh();
                         }

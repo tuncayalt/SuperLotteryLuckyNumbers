@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 coupon.setPlayTime(date);
                 coupon.setLotteryTime(dateLottery);
                 coupon.setToRemind("T");
-                coupon.setServerCalled(false);
+                coupon.setServerCalled("F");
                 coupon.setWinCount(-1);
                 coupon.setDeleted(false);
                 couponList.add(coupon);
@@ -308,7 +308,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                     realm = Realm.getDefaultInstance();
                     realm.beginTransaction();
                     for (Coupon coupon : managedCouponList) {
-                        coupon.setServerCalled(true);
+                        coupon.setServerCalled("T");
                     }
                     realm.commitTransaction();
                     realm.refresh();
