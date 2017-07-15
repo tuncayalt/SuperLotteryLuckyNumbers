@@ -123,6 +123,7 @@
         android:text="Kupondan Al"
         android:background="@drawable/buttonshape"
         android:textColor="#EEEEEE"
+        android:visibility="gone"
         android:onClick="KupondanAl"
         android:id="@+id/btnKupondanAl" />
 
