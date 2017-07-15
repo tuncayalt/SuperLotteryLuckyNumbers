@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
@@ -28,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     int pickerViewNumber = 0;
     int pickerMinNumber = 0;
     int pickerMaxNumber = 54;
+    int numberToChoose = 6;
     String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     IServerService serverService;
 
@@ -142,12 +145,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         //make sure training data has been copied
         checkFile(new File(datapath + "tessdata/"));
         //initialize Tesseract API
-        String lang = "eng";
+        String lang = "tur";
         mTess = new TessBaseAPI();
+        mTess.init(datapath, lang);
         mTess.setPageSegMode(TessBaseAPI.PageSegMode.PSM_AUTO_OSD);
-//        mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
-//        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
-//                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, "1234567890");
+        mTess.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "!@#$%^&*()_+=-qwertyuiop[]}{POIU" +
+                "YTREWQasdASDfghFGHjklJKLl;L:'\"\\|~`xcvXCVbnmBNM,./<>?");
+
 
         GetDates task = new GetDates();
         task.execute();
@@ -230,11 +235,10 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
             Bitmap image = null;
             try {
-                image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageFileUri);
+                //image = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageFileUri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 4; // 1 - means max size. 4 - means maxsize/4 size. Don't use value <4, because you need more memory in the heap to store your data.
-                image = BitmapFactory.decodeFile(imageFileUri.getPath(), options);
-
+                image = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
 
                 image = modifyImage(image);
                 showKupondanAlDialog(image);
@@ -267,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 rotate = 270;
                 break;
         }
-        //rotate = 90;
+        rotate = 90;
 
         if (rotate != 0) {
 
@@ -283,9 +287,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, false);
         }
 
-        bitmap = Bitmap.createScaledBitmap(bitmap, 1191, 2000, false);
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() * 2, (int)(bitmap.getHeight()), false);
         bitmap = BitmapUtils.setGrayscale(bitmap);
-        //bitmap = BitmapUtils.removeNoise(bitmap);
+        bitmap = BitmapUtils.removeNoise(bitmap, 160);
 
         return bitmap;
 
@@ -294,13 +298,13 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private void copyFiles() {
         try {
             //location we want the file to be at
-            String filepath = datapath + "/tessdata/eng.traineddata";
+            String filepath = datapath + "/tessdata/tur.traineddata";
 
             //get access to AssetManager
             AssetManager assetManager = getAssets();
 
             //open byte streams for reading/writing
-            InputStream instream = assetManager.open("tessdata/eng.traineddata");
+            InputStream instream = assetManager.open("tessdata/tur.traineddata");
             OutputStream outstream = new FileOutputStream(filepath);
 
             //copy the file to the location specified by filepath
@@ -327,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         }
         //The directory exists, but there is no data file in it
         if (dir.exists()) {
-            String datafilepath = datapath + "/tessdata/eng.traineddata";
+            String datafilepath = datapath + "/tessdata/tur.traineddata";
             File datafile = new File(datafilepath);
             if (!datafile.exists()) {
                 copyFiles();
@@ -357,37 +361,88 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         d.setTitle("NumberPicker");
         d.setContentView(R.layout.numpicker);
         d.setCanceledOnTouchOutside(false);
-        Button b1 = (Button) d.findViewById(R.id.btnNumPickTamam);
+        final Button b1 = (Button) d.findViewById(R.id.btnNumPickTamam);
+        b1.setEnabled(false);
         Button b2 = (Button) d.findViewById(R.id.btnNumPickIptal);
-        final NumberPicker np = (NumberPicker) d.findViewById(R.id.npNumPiker);
-        np.setMaxValue(pickerMaxNumber);
-        np.setMinValue(pickerMinNumber + 1);
-        np.setWrapSelectorWheel(false);
-        np.setOnValueChangedListener(this);
-        (views.get(0)).setBackgroundResource(R.drawable.textview_selected);
+        LinearLayout llNumPicker = (LinearLayout) d.findViewById(R.id.llNumpicker);
+        LinearLayout currentLayout = new LinearLayout(this);
+        numberToChoose = 6;
+        for (int i = pickerMinNumber; i < pickerMaxNumber; i++){
+
+            if (i % 6 == 0){
+                LinearLayout ll = new LinearLayout(this);
+                LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                ll.setLayoutParams(llParams);
+                llNumPicker.addView(ll);
+                currentLayout = ll;
+            }
+
+            Button b = new Button(this);
+            b.setTag(false);
+            b.setText(leftPadding(i + 1));
+            b.setBackgroundColor(Color.BLUE);
+            b.setTextColor(Color.WHITE);
+
+            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            btnParams.weight = 1;
+            b.setLayoutParams(btnParams);
+
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean tag = (boolean)v.getTag();
+                    if (tag){
+                        v.setTag(false);
+                        v.setBackgroundColor(Color.BLUE);
+                        numberToChoose++;
+                        b1.setEnabled(false);
+                    }
+                    else{
+                        if (numberToChoose > 0) {
+                            v.setTag(true);
+                            v.setBackgroundColor(Color.RED);
+                            numberToChoose--;
+                            if (numberToChoose == 0){
+                                b1.setEnabled(true);
+                            }
+                        }
+                    }
+                }
+            });
+            currentLayout.addView(b);
+        }
+
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((EditText) views.get(pickerViewNumber)).setText(leftPadding(np.getValue()));
-                views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_round);
-                pickerMinNumber = np.getValue();
-                if (pickerMinNumber >= pickerMaxNumber && pickerViewNumber < 5) {
-                    Sifirla();
-                    np.setMinValue(1);
-                    np.setValue(1);
-                    views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_selected);
+                if (numberToChoose != 0 )
                     return;
+
+                ArrayList<View> layouts = getViewsInLayout((LinearLayout) d.findViewById(R.id.llNumpicker));
+                ArrayList<View> buttons = new ArrayList<View>();
+
+                ArrayList<String> selectedNums = new ArrayList<String>();
+                for (View layout : layouts) {
+                    buttons.clear();
+                    buttons = getViewsInLayout((LinearLayout) layout);
+                    for (View button : buttons) {
+                        if (button instanceof Button && (boolean) button.getTag()) {
+                            selectedNums.add(((Button) button).getText().toString());
+                        }
+                    }
                 }
-                np.setMinValue(pickerMinNumber + 1);
-                pickerViewNumber++;
-                if (pickerViewNumber >= 6) {
-                    pickerMinNumber = 0;
-                    pickerViewNumber = 0;
-                    ListeyeEkle();
-                    d.dismiss();
-                } else {
-                    views.get(pickerViewNumber).setBackgroundResource(R.drawable.textview_selected);
+                Collections.sort(selectedNums);
+                int currentNum = -1;
+                for (String num:selectedNums) {
+                    currentNum++;
+                    ((EditText) views.get(currentNum)).setText(num);
                 }
+                ListeyeEkle();
+                d.dismiss();
             }
         });
         b2.setOnClickListener(new View.OnClickListener() {
