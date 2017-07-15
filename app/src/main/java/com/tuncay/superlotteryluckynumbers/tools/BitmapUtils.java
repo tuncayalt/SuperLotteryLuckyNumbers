@@ -71,7 +71,7 @@ public class BitmapUtils {
         }
 
         bmap = setGrayscale(bmap);
-        bmap = removeNoise(bmap);
+        bmap = removeNoise(bmap, 160);
 
         return bmap;
     }
@@ -91,17 +91,19 @@ public class BitmapUtils {
         ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
         paint.setColorFilter(f);
         c.drawBitmap(bmpOriginal, 0, 0, paint);
+        bmpOriginal.recycle();
         return bmpGrayscale;
     }
 
     // RemoveNoise
-    public static Bitmap removeNoise(Bitmap bmap) {
+    public static Bitmap removeNoise(Bitmap bmap, int amount) {
+
         for (int x = 0; x < bmap.getWidth(); x++) {
             for (int y = 0; y < bmap.getHeight(); y++) {
                 int pixel = bmap.getPixel(x, y);
-                if (Color.red(pixel) < 162 && Color.green(pixel) < 162 && Color.blue(pixel) < 162) {
+                if (Color.red(pixel) < amount && Color.green(pixel) < amount && Color.blue(pixel) < amount) {
                     bmap.setPixel(x, y, Color.BLACK);
-                }else if (Color.red(pixel) > 162 && Color.green(pixel) > 162 && Color.blue(pixel) > 162) {
+                }else if (Color.red(pixel) > amount && Color.green(pixel) > amount && Color.blue(pixel) > amount) {
                     bmap.setPixel(x, y, Color.WHITE);
                 }
             }
