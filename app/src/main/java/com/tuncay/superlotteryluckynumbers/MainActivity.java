@@ -176,8 +176,8 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             Button b = new Button(this);
             b.setTag(false);
             b.setText(leftPadding(i + 1));
-            b.setBackgroundColor(Color.BLUE);
-            b.setTextColor(Color.WHITE);
+            b.setBackgroundColor(Color.parseColor("#2980B9"));
+            b.setTextColor(Color.parseColor("#EEEEEE"));
 
             LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -191,14 +191,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                     boolean tag = (boolean)v.getTag();
                     if (tag){
                         v.setTag(false);
-                        v.setBackgroundColor(Color.BLUE);
+                        v.setBackgroundColor(Color.parseColor("#2980B9"));
                         numberToChoose++;
                         b1.setEnabled(false);
                     }
                     else{
                         if (numberToChoose > 0) {
                             v.setTag(true);
-                            v.setBackgroundColor(Color.RED);
+                            v.setBackgroundColor(Color.parseColor("#C0392B"));
                             numberToChoose--;
                             if (numberToChoose == 0){
                                 b1.setEnabled(true);
