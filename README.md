@@ -2,16 +2,16 @@
 
 An Android application for saving lottery coupons and sending the results via push notification.
 
-Technologies used:
+## Technologies Used
 
 Realm DB,
 Retrofit,
 Firebase Push Notification.
 
-Project Link:
+## Project Link
 
 https://play.google.com/store/apps/details?id=com.tuncay.superlotteryluckynumbers
 
-Back-end code:
+## Backend Code
 
 https://github.com/tuncayalt/SuperLotteryLuckyNumbersServer
