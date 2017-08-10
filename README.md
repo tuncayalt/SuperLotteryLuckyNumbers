@@ -12,6 +12,6 @@ Firebase Push Notification.
 
 https://play.google.com/store/apps/details?id=com.tuncay.superlotteryluckynumbers
 
-## Backend Code
+## Backend Code
 
 https://github.com/tuncayalt/SuperLotteryLuckyNumbersServer
