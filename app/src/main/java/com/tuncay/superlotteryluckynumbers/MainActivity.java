@@ -25,6 +25,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.tuncay.superlotteryluckynumbers.adapter.CustomMainListAdapter;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.MainListElement;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
@@ -62,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     int pickerMinNumber = 0;
     int pickerMaxNumber = 54;
     int numberToChoose = 6;
-    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     IServerService serverService;
 
     List<Coupon> couponList;
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         realm = Realm.getDefaultInstance();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

@@ -11,6 +11,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.tuncay.superlotteryluckynumbers.R;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
@@ -48,9 +49,8 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
         mInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Realm.init(context);
-        String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

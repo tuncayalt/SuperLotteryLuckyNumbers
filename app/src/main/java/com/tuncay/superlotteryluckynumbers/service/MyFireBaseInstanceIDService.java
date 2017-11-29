@@ -2,9 +2,11 @@ package com.tuncay.superlotteryluckynumbers.service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.User;
 
 import java.net.URL;
@@ -17,7 +19,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
 
-    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     String urlSaveToken = "user/SaveToken";
     String urlSaveUser = "user/SaveUser";
 
@@ -36,7 +37,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
     public MyFireBaseInstanceIDService() {
         this.context = this;
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -61,7 +62,10 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         }
         if (userId.equals("")) {
             userId = java.util.UUID.randomUUID().toString();
+
         }
+        Log.d("userId:", userId);
+        Log.d("recentToken:", recentToken);
 
         sharedPref = this.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -80,10 +84,12 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         SharedPreferences sharedPref = context.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
         pushCekilis = sharedPref.getString("pushCekilis", "RT");
         userId = sharedPref.getString("userId", "");
+        Log.d("userId:", userId);
         boolean sentToServer = sharedPref.getBoolean("sentToServer", false);
 
         if ((!sentToServer && !userId.equals("")) || pushCekilis.substring(0,1).equals("D")){
             recentToken = FirebaseInstanceId.getInstance().getToken();
+            Log.d("recentToken:", recentToken);
             prevToken = sharedPref.getString("token", "");
             if (!userId.equals(""))
                 sendRegistrationToServer(urlSaveUser);

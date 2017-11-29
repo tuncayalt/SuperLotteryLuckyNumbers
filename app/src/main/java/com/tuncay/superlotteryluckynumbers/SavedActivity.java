@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.tuncay.superlotteryluckynumbers.adapter.CustomSavedListAdapter;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.model.SavedListElement;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
@@ -31,7 +32,6 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
     ListView lvSavedList;
     CustomSavedListAdapter adapter;
     Realm realm;
-    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     IServerService serverService;
     List<Coupon> coupons;
     ArrayList<SavedListElement> result;
@@ -56,7 +56,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         Realm.init(this);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

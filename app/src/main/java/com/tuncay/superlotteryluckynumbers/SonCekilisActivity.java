@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Cekilis;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
@@ -26,7 +27,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SonCekilisActivity extends AppCompatActivity {
 
     private static final String TAG = "SonCekilisActivity";
-    String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     boolean error;
     TextView txtCekilisTarihi;
     TextView txtCekilisNumaralar1;
@@ -51,7 +51,7 @@ public class SonCekilisActivity extends AppCompatActivity {
         txtCekilisNumaralar6 = (TextView) findViewById(R.id.txtCekilisNumaralar6);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

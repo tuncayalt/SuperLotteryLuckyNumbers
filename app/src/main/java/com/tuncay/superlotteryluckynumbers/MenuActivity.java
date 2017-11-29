@@ -1,8 +1,6 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,22 +15,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.google.gson.Gson;
-import com.tuncay.superlotteryluckynumbers.model.Cekilis;
+import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.util.Arrays;
 import java.util.List;
 
 import io.realm.Realm;
@@ -47,7 +40,6 @@ public class MenuActivity extends AppCompatActivity {
 
     private static final String TAG = "MenuActivity";
     private Realm realm;
-    private String urlBase = "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
     private String userId;
     private IServerService serverService;
     private Coupon couponToDelete;
@@ -67,6 +59,7 @@ public class MenuActivity extends AppCompatActivity {
     private AdView mAdView;
     List<Coupon> notSyncedCouponList;
     RealmResults<Coupon> notSyncedAddedRealmResults;
+    InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +73,7 @@ public class MenuActivity extends AppCompatActivity {
 
         Realm.init(this);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(urlBase)
+                .baseUrl(Constant.serverUrlBase)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         userId = getUserId();
@@ -89,6 +82,10 @@ public class MenuActivity extends AppCompatActivity {
 
         MobileAds.initialize(this, "ca-app-pub-5819132225601729~6536327892");
         loadBannerAd();
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-5819132225601729/6918771341");
+        requestNewInterstitial();
 
         showFirstInfoDialog();
 
@@ -100,6 +97,15 @@ public class MenuActivity extends AppCompatActivity {
                 .addTestDevice("B919CF34582CDFA602B3A23BBF6A5516")
                 .build();
         mAdView.loadAd(adRequest);
+    }
+
+    private void requestNewInterstitial() {
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .addTestDevice("B919CF34582CDFA602B3A23BBF6A5516")
+                .build();
+
+        mInterstitialAd.loadAd(adRequest);
     }
 
     private void showFirstInfoDialog() {
@@ -332,17 +338,66 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void Kuponlarim(View view){
-/*        if (mAuth.getCurrentUser() == null) {
-            Toast.makeText(this, "Kayıtlı kuponlarınızı görmek için giriş yapın", Toast.LENGTH_LONG).show();
-            return;
-        }*/
+        SharedPreferences shaPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
+        long adLastTime = shaPref.getLong("adLastTime", 0);
 
+        if (System.currentTimeMillis() - adLastTime > Constant.interstatialWaitTime) {
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    requestNewInterstitial();
+                    goToSaved(userId);
+                }
+            });
+            SharedPreferences sharedPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("adLastTime", System.currentTimeMillis());
+            editor.apply();
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+                goToSaved(userId);
+            }
+        }else{
+            goToSaved(userId);
+        }
+    }
+
+    private void goToSaved(String userId) {
         Intent intent = new Intent(this, SavedActivity.class);
         intent.putExtra("userId", userId);
         startActivity(intent);
     }
 
     public void SonCekilis(View view){
+        SharedPreferences shaPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
+        long adLastTime = shaPref.getLong("adLastTime", 0);
+
+        if (System.currentTimeMillis() - adLastTime > Constant.interstatialWaitTime) {
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdClosed() {
+                    requestNewInterstitial();
+                    goToSonCekilis();
+                }
+            });
+            SharedPreferences sharedPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putLong("adLastTime", System.currentTimeMillis());
+            editor.apply();
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            } else {
+                goToSonCekilis();
+            }
+        }else{
+            goToSonCekilis();
+        }
+    }
+
+    private void goToSonCekilis() {
         Intent intent = new Intent(this, SonCekilisActivity.class);
         startActivity(intent);
     }
