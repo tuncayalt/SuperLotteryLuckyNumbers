@@ -10,5 +10,5 @@ public class Constant {
             //"https://superlotteryluckynumbersservertest.eu-gb.mybluemix.net/api/";
             "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
 
-    public static final long interstatialWaitTime = 300000;
+    public static final long interstatialWaitTime = 1000000;
 }
