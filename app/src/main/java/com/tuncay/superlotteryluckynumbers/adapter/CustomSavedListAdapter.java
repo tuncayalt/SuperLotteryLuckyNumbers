@@ -1,5 +1,6 @@
 package com.tuncay.superlotteryluckynumbers.adapter;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.tuncay.superlotteryluckynumbers.R;
+import com.tuncay.superlotteryluckynumbers.SavedActivity;
 import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
@@ -36,16 +38,20 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
     private Realm realm;
     private LayoutInflater mInflater;
     private String couponIdToDelete;
+    private Context context;
 
     private IListener listener;
-    public interface IListener{
+
+    public interface IListener {
         void onDeleteCoupon(View v);
     }
-    public void setListener(IListener listener){
+
+    public void setListener(IListener listener) {
         this.listener = listener;
     }
 
     public CustomSavedListAdapter(Context context) {
+        this.context = context;
         mInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         Realm.init(context);
@@ -99,13 +105,12 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     @Override
-    public boolean areAllItemsEnabled()
-    {
+    public boolean areAllItemsEnabled() {
         return true;
     }
+
     @Override
-    public boolean isEnabled(int arg0)
-    {
+    public boolean isEnabled(int arg0) {
         return true;
     }
 
@@ -134,37 +139,52 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                     @Override
                     public void onClick(View v) {
                         //TODO: realm ve servere kaydet
-                            realm = Realm.getDefaultInstance();
 
-                            couponIdToDelete = mData.get(position).split(";")[2];
-                            final Coupon couponToDelete = realm.where(Coupon.class)
-                                    .equalTo("couponId", couponIdToDelete).findFirst();
-                            realm.beginTransaction();
-                            couponToDelete.setDeleted(true);
-                            couponToDelete.setServerCalled("F");
-                            realm.commitTransaction();
-                            realm.refresh();
+                        final ProgressDialog dialog = new ProgressDialog(context, ProgressDialog.THEME_HOLO_DARK);
+                        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        dialog.setTitle("Lütfen bekleyin");
+                        dialog.setMessage("Kupon siliniyor...");
+                        dialog.show();
 
-                            Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
-                            couponDeleteCall.enqueue(new Callback<Boolean>() {
-                                @Override
-                                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                                    if (response.isSuccessful()){
-                                        realm = Realm.getDefaultInstance();
-                                        realm.beginTransaction();
-                                        couponToDelete.setServerCalled("T");
-                                        realm.commitTransaction();
-                                        realm.refresh();
-                                    }
-                                    else{
-                                        //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
-                                    }
+                        try {
+                            Thread.sleep(600);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        realm = Realm.getDefaultInstance();
+
+                        couponIdToDelete = mData.get(position).split(";")[2];
+                        final Coupon couponToDelete = realm.where(Coupon.class)
+                                .equalTo("couponId", couponIdToDelete).findFirst();
+                        realm.beginTransaction();
+                        couponToDelete.setDeleted(true);
+                        couponToDelete.setServerCalled("F");
+                        realm.commitTransaction();
+                        realm.refresh();
+
+                        Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
+                        couponDeleteCall.enqueue(new Callback<Boolean>() {
+                            @Override
+                            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                                dialog.dismiss();
+                                if (response.isSuccessful()) {
+                                    realm = Realm.getDefaultInstance();
+                                    realm.beginTransaction();
+                                    couponToDelete.setServerCalled("T");
+                                    realm.commitTransaction();
+                                    realm.refresh();
+                                } else {
+                                    //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
                                 }
-                                @Override
-                                public void onFailure(Call<Boolean> call, Throwable t) {
-                                    //Log.d("CustomListAdapter", "response failure");
-                                }
-                            });
+                            }
+
+                            @Override
+                            public void onFailure(Call<Boolean> call, Throwable t) {
+                                dialog.dismiss();
+                                //Log.d("CustomListAdapter", "response failure");
+                            }
+                        });
                         removeItem(position);
                     }
                 });
@@ -177,19 +197,17 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                 int myNum = 0;
                 try {
                     myNum = Integer.parseInt(data[1]);
-                } catch(NumberFormatException nfe) {
+                } catch (NumberFormatException nfe) {
                     System.out.println("Could not parse " + nfe);
                 }
 
-                if (myNum < 1){
+                if (myNum < 1) {
                     holder.tvSavedWin.setText("");
                     holder.tvSavedWin.setTextColor(Color.parseColor("#000000"));
-                }
-                else if (myNum < 3){
+                } else if (myNum < 3) {
                     holder.tvSavedWin.setText(data[1] + " tuttu");
                     holder.tvSavedWin.setTextColor(Color.parseColor("#EEEEEE"));
-                }
-                else{
+                } else {
                     holder.tvSavedWin.setText(data[1] + " tuttu!");
                     holder.tvSavedWin.setTextColor(Color.parseColor("#EE0000"));
                 }
