@@ -5,15 +5,14 @@
     android:background="@drawable/layout_gradient"
     android:gravity="center_vertical" >
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
+    <CheckBox
+        android:id="@+id/chkSavedSec"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text=""
-        android:background="@drawable/sil"
         android:layout_gravity="center_vertical"
-        android:layout_weight="15"
-        android:id="@+id/btnSavedSil" />
+        android:layout_weight="10"
+        android:buttonTint="#EEEEEE"/>
 
     <TextView
         android:id="@+id/tvSaved"

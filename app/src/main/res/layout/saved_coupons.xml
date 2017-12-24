@@ -24,6 +24,16 @@
         android:textColor="#EEEEEE"
         android:id="@+id/tvKaydettigimNumaralar" />
 
+    <Button
+        android:id="@+id/btnSeciliSil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sil"
+        android:background="@drawable/buttonshape"
+        android:textColor="#EEEEEE"
+        android:onClick="SecilileriSil"
+        android:visibility="gone" />
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

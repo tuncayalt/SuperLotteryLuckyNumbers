@@ -26,6 +26,7 @@ import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -45,16 +46,16 @@ public class MenuActivity extends AppCompatActivity {
     private Coupon couponToDelete;
     private String[] firstInfoStrings = {
             "- Süper Loto için kendi şanslı numaralarınızı üretin\n" +
-            "- Şanslı numaralarınızı kaydedin\n" +
-            "- Çekiliş sonrası sonuçları telefonunuza gönderelim!\n",
+                    "- Şanslı numaralarınızı kaydedin\n" +
+                    "- Çekiliş sonrası sonuçları telefonunuza gönderelim!\n",
             "Şanslı Numara Bul ekranından\n" +
-            "- Şanslı kelimeniz yardımıyla numaralarınızı üretin\n" +
-            "veya\n" +
-            "- Şanslı numaralarınızı kendiniz girin\n",
+                    "- Şanslı kelimeniz yardımıyla numaralarınızı üretin\n" +
+                    "veya\n" +
+                    "- Şanslı numaralarınızı kendiniz girin\n",
             "- Numaralarınızı girdikten sonra\n" +
-            "- Kaydedilecek olanları seçin\n" +
-            "- Çekiliş tarihini seçin\n" +
-            "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin"
+                    "- Kaydedilecek olanları seçin\n" +
+                    "- Çekiliş tarihini seçin\n" +
+                    "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin"
     };
     private AdView mAdView;
     List<Coupon> notSyncedCouponList;
@@ -168,18 +169,18 @@ public class MenuActivity extends AppCompatActivity {
     private void NextInfo(TextView tvFirstInfoInfo, Dialog d, Button btnFirstInfoSonraki, CheckBox cbFirstInfoGosterme, boolean getFirstInfoCurrentPage) {
         SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
         int firstInfoCurrentPage;
-        if (getFirstInfoCurrentPage){
+        if (getFirstInfoCurrentPage) {
             firstInfoCurrentPage = sPref.getInt("firstInfoCurrentPage", 0) % firstInfoStrings.length;
-        }else {
+        } else {
             firstInfoCurrentPage = 0;
         }
 
         tvFirstInfoInfo.setText(firstInfoStrings[firstInfoCurrentPage]);
         if (btnFirstInfoSonraki.getText().equals("Bitti")) {
             d.dismiss();
-        }else if (firstInfoCurrentPage == firstInfoStrings.length - 1){
+        } else if (firstInfoCurrentPage == firstInfoStrings.length - 1) {
             btnFirstInfoSonraki.setText("Bitti");
-        }else {
+        } else {
             btnFirstInfoSonraki.setText("Sonraki");
         }
         SharedPreferences.Editor editor = sPref.edit();
@@ -198,12 +199,12 @@ public class MenuActivity extends AppCompatActivity {
         realm = Realm.getDefaultInstance();
         notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", "F").findAll();
         notSyncedCouponList = realm.copyFromRealm(notSyncedAddedRealmResults);
-        if (notSyncedCouponList != null && !notSyncedCouponList.isEmpty()){
+        if (notSyncedCouponList != null && !notSyncedCouponList.isEmpty()) {
             final Call<Boolean> couponsAddCall = serverService.insertCoupon(notSyncedCouponList);
             couponsAddCall.enqueue(new Callback<Boolean>() {
                 @Override
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                    if (response.isSuccessful()){
+                    if (response.isSuccessful()) {
                         realm = Realm.getDefaultInstance();
                         notSyncedAddedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).equalTo("serverCalled", "F").findAll();
                         realm.beginTransaction();
@@ -212,11 +213,11 @@ public class MenuActivity extends AppCompatActivity {
                         }
                         realm.commitTransaction();
                         realm.refresh();
-                    }
-                    else{
+                    } else {
                         //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
                     }
                 }
+
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
                     //Log.d("CustomListAdapter", "response failure");
@@ -228,33 +229,38 @@ public class MenuActivity extends AppCompatActivity {
 
     private void SyncDeleted() {
         realm = Realm.getDefaultInstance();
-        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
+        final RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
 
-        if (notSyncedDeletedRealmResults != null && !notSyncedDeletedRealmResults.isEmpty()){
+        if (notSyncedDeletedRealmResults != null && !notSyncedDeletedRealmResults.isEmpty()) {
+            List<String> couponIdListToDelete = new ArrayList<>();
+
             for (Coupon coupon : notSyncedDeletedRealmResults) {
-                this.couponToDelete = coupon;
-                String couponIdToDelete = coupon.getCouponId();
-                Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
-                couponDeleteCall.enqueue(new Callback<Boolean>() {
-                    @Override
-                    public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                        if (response.isSuccessful()){
-                            realm = Realm.getDefaultInstance();
-                            realm.beginTransaction();
-                            couponToDelete.setServerCalled("T");
-                            realm.commitTransaction();
-                            realm.refresh();
-                        }
-                        else{
-                            //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
-                        }
-                    }
-                    @Override
-                    public void onFailure(Call<Boolean> call, Throwable t) {
-                        //Log.d("CustomListAdapter", "response failure");
-                    }
-                });
+                couponIdListToDelete.add(coupon.getCouponId());
             }
+
+            Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdListToDelete.toString());
+            couponDeleteCall.enqueue(new Callback<Boolean>() {
+                @Override
+                public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                    if (response.isSuccessful()) {
+                        realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+                        for (Coupon coupon : notSyncedDeletedRealmResults) {
+                            coupon.setServerCalled("T");
+                        }
+                        realm.commitTransaction();
+                        realm.refresh();
+                    } else {
+                        //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Boolean> call, Throwable t) {
+                    //Log.d("CustomListAdapter", "response failure");
+                }
+            });
+
         }
     }
 
@@ -278,8 +284,8 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    public void SevdigimKelimeAl(View view){
-        if (!getSevdigimKelime().isEmpty()){
+    public void SevdigimKelimeAl(View view) {
+        if (!getSevdigimKelime().isEmpty()) {
             Intent intent = new Intent(MenuActivity.this, MainActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
@@ -295,8 +301,7 @@ public class MenuActivity extends AppCompatActivity {
         Button btnKelimeIptal = (Button) d.findViewById(R.id.btnKelimeIptal);
         final EditText edtSevdigimKelime = (EditText) d.findViewById(R.id.edtSevdigimKelime);
 
-        btnKelimeTamam.setOnClickListener(new View.OnClickListener()
-        {
+        btnKelimeTamam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (edtSevdigimKelime.getText().toString().isEmpty())
@@ -313,8 +318,7 @@ public class MenuActivity extends AppCompatActivity {
                 d.dismiss();
             }
         });
-        btnKelimeIptal.setOnClickListener(new View.OnClickListener()
-        {
+        btnKelimeIptal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 d.dismiss();
@@ -331,13 +335,13 @@ public class MenuActivity extends AppCompatActivity {
         return userId;
     }
 
-    private String getSevdigimKelime(){
+    private String getSevdigimKelime() {
         SharedPreferences sPref = getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
         String sevdigimKelime = sPref.getString("kelime", "");
         return sevdigimKelime;
     }
 
-    public void Kuponlarim(View view){
+    public void Kuponlarim(View view) {
         SharedPreferences shaPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
         long adLastTime = shaPref.getLong("adLastTime", 0);
 
@@ -359,7 +363,7 @@ public class MenuActivity extends AppCompatActivity {
             } else {
                 goToSaved(userId);
             }
-        }else{
+        } else {
             goToSaved(userId);
         }
     }
@@ -370,7 +374,7 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void SonCekilis(View view){
+    public void SonCekilis(View view) {
         SharedPreferences shaPref = getSharedPreferences("menuInterAd", MODE_PRIVATE);
         long adLastTime = shaPref.getLong("adLastTime", 0);
 
@@ -392,7 +396,7 @@ public class MenuActivity extends AppCompatActivity {
             } else {
                 goToSonCekilis();
             }
-        }else{
+        } else {
             goToSonCekilis();
         }
     }
@@ -402,7 +406,7 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void Ayarlar(View view){
+    public void Ayarlar(View view) {
         Intent intent = new Intent(this, AyarlarActivity.class);
         startActivity(intent);
     }

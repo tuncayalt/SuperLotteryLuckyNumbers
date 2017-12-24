@@ -4,8 +4,11 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tuncay.superlotteryluckynumbers.adapter.CustomSavedListAdapter;
@@ -30,6 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SavedActivity extends AppCompatActivity implements CustomSavedListAdapter.IListener{
 
     ListView lvSavedList;
+    Button btnSeciliSil;
+    TextView tvKaydettigimNumaralar;
     CustomSavedListAdapter adapter;
     Realm realm;
     IServerService serverService;
@@ -43,12 +48,15 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.saved_coupons);
 
-        showProgress("Kaydedilmiş kuponlar gösteriyor...");
+        showProgress("Kaydedilmiş kuponlar gösteriliyor...");
 
         lvSavedList = (ListView) findViewById(R.id.lvSavedList);
         adapter = new CustomSavedListAdapter(this);
         lvSavedList.setAdapter(adapter);
         adapter.setListener(this);
+        btnSeciliSil = (Button) findViewById(R.id.btnSeciliSil);
+
+        tvKaydettigimNumaralar = (TextView) findViewById(R.id.tvKaydettigimNumaralar);
 
         SharedPreferences sharedPref = this.getSharedPreferences("firebaseUserToken", MODE_PRIVATE);
         userId = sharedPref.getString("userId", "");
@@ -66,7 +74,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
     }
 
     private void showProgress(String message) {
-        progress = new ProgressDialog(this);
+        progress = new ProgressDialog(SavedActivity.this);
         progress.setIndeterminate(true);
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.setMessage(message);
@@ -112,17 +120,22 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
                             }
                         }
                         getCouponsFromLocalDb(userId);
+                        progress.dismiss();
                     }
                     @Override
                     public void onFailure(Call<List<Coupon>> call, Throwable t) {
-                        Toast.makeText(SavedActivity.this, "Kuponlar sunucudan alınamadı, İnternet bağlantınızı kontrol edin.",
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(SavedActivity.this,
+                                "Kuponlar sunucudan alınamadı, İnternet bağlantınızı kontrol edin.",
+                                Toast.LENGTH_SHORT)
+                                .show();
                         getCouponsFromLocalDb(userId);
+                        progress.dismiss();
                     }
                 });
             }
             else {
                 getCouponsFromLocalDb(userId);
+                progress.dismiss();
             }
 
         } catch (IllegalArgumentException e) {
@@ -135,7 +148,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
     }
 
     public void getCouponsFromLocalDb(String userId) {
-        RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).findAllSorted("playTime", Sort.DESCENDING);
+        RealmResults<Coupon> couponRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", false).findAllSorted("lotteryTime", Sort.DESCENDING);
 
         if (couponRealmResults != null && !couponRealmResults.isEmpty()){
             for (Coupon coupon : couponRealmResults) {
@@ -153,16 +166,38 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
             if (i == 0 || !ld.equals(result.get(i - 1).getLotteryDate())) {
                 adapter.addSectionHeaderItem(ld + " çekilişi");
             }
-            adapter.addItem(sle.getNumString() + ";" + sle.getWinCount() + ";" + sle.getCouponId());
+            adapter.addItem(sle.getNumString() + ";" + sle.getWinCount() + ";" + sle.getCouponId() + ";" + "0");
         }
 
         adapter.notifyDataSetChanged();
-        progress.dismiss();
     }
 
     @Override
-    public void onDeleteCoupon(View v) {
+    public void onSelectionToDelete(View v) {
+        if (adapter.countSelected() > 0){
+            btnSeciliSil.setVisibility(View.VISIBLE);
+            tvKaydettigimNumaralar.setVisibility(View.GONE);
+
+        }else{
+            btnSeciliSil.setVisibility(View.GONE);
+            tvKaydettigimNumaralar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void SecilileriSil(View view){
+        Log.d("SavedActivity", "Kuponlar silinecek");
+
+        adapter.deleteSelectedCoupons();
+        //adapter.resetItemSelection();
+        btnSeciliSil.setVisibility(View.GONE);
+        tvKaydettigimNumaralar.setVisibility(View.VISIBLE);
+        //getCouponsFromLocalDb(userId);
+    }
+
+    /*@Override
+    public void onSe(View v) {
         int pos = lvSavedList.getPositionForView((View) v.getParent());
         adapter.removeItem(pos);
-    }
+    }*/
+
 }

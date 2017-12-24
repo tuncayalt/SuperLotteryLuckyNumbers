@@ -7,8 +7,9 @@ package com.tuncay.superlotteryluckynumbers.constant;
 public class Constant {
 
     public static final String serverUrlBase =
-            //"https://superlotteryluckynumbersservertest.eu-gb.mybluemix.net/api/";
+            //"https://superlotteryluckynumbersdev.eu-gb.mybluemix.net/api/";
             "https://superlotteryluckynumbersserver.eu-gb.mybluemix.net/api/";
+            //"http://192.168.0.12:5000/api/";
 
     public static final long interstatialWaitTime = 1000000;
 }

@@ -7,17 +7,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.tuncay.superlotteryluckynumbers.R;
-import com.tuncay.superlotteryluckynumbers.SavedActivity;
 import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 import io.realm.Realm;
@@ -43,7 +44,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
     private IListener listener;
 
     public interface IListener {
-        void onDeleteCoupon(View v);
+        void onSelectionToDelete(View v);
     }
 
     public void setListener(IListener listener) {
@@ -73,10 +74,141 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
         notifyDataSetChanged();
     }
 
+    public void removeItemsFromDb(ArrayList<Integer> positions) {
+        final ProgressDialog dialog = new ProgressDialog(context, ProgressDialog.THEME_HOLO_DARK);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.setTitle("Lütfen bekleyin");
+        dialog.setMessage("Kuponlar siliniyor...");
+        dialog.show();
+
+        realm = Realm.getDefaultInstance();
+
+        final List<Coupon> couponListToDelete = new ArrayList<>();
+        List<String> couponIdListToDelete = new ArrayList<>();
+        for (int position : positions) {
+            couponIdToDelete = mData.get(position).split(";")[2];
+            couponIdListToDelete.add(couponIdToDelete);
+            Coupon couponToDelete = realm.where(Coupon.class)
+                    .equalTo("couponId", couponIdToDelete).findFirst();
+            couponListToDelete.add(couponToDelete);
+        }
+
+        realm.beginTransaction();
+        for (Coupon item : couponListToDelete) {
+            item.setDeleted(true);
+            item.setServerCalled("F");
+        }
+        realm.commitTransaction();
+        realm.refresh();
+
+        Call<Boolean> couponsDeleteCall = serverService.deleteCoupon(couponIdListToDelete.toString());
+        couponsDeleteCall.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+
+                if (response.isSuccessful()) {
+                    realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    for (Coupon item : couponListToDelete) {
+                        item.setServerCalled("T");
+                    }
+                    realm.commitTransaction();
+                    realm.refresh();
+                } else {
+                    //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                dialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                dialog.dismiss();
+                //Log.d("CustomListAdapter", "response failure");
+            }
+        });
+        removeItems(positions);
+    }
+
+    private void removeItems(ArrayList<Integer> positions) {
+
+        for (int i = positions.size() - 1; i >= 0; i--){
+            int pos = positions.get(i);
+            mData.remove(pos);
+        }
+        sectionHeader.clear();
+        for (int i = 0; i < mData.size(); i++) {
+            if (!mData.get(i).contains(";")){
+                sectionHeader.add(i);
+            }
+        }
+
+        notifyDataSetChanged();
+    }
+
     public void addSectionHeaderItem(final String item) {
         mData.add(item);
         sectionHeader.add(mData.size() - 1);
         notifyDataSetChanged();
+    }
+
+    public void setItemSelection(int position, boolean isSelected) {
+        String[] data = mData.get(position).split(";");
+        data[3] = isSelected ? "1" : "0";
+        mData.set(position, data[0] + ";" + data[1] + ";" + data[2] + ";" + data[3]);
+        notifyDataSetChanged();
+    }
+
+    public void resetItemSelection() {
+        ArrayList<String> temp = new ArrayList<>();
+        for (String item: mData) {
+            String[] data = item.split(";");
+            if (data.length == 4){
+                data[3] = "0";
+                item = data[0] + ";" + data[1] + ";" + data[2] + ";" + data[3];
+            }
+            temp.add(item);
+        }
+        mData = temp;
+
+        notifyDataSetChanged();
+    }
+
+    public int countSelected() {
+        int result = 0;
+        for (String item : mData) {
+            String[] data = item.split(";");
+            if (isItemSelected(data)) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+    private boolean isItemSelected(String[] data) {
+        return data.length == 4 && data[3].equals("1");
+    }
+
+    public void deleteSelectedCoupons() {
+        ArrayList<Integer> couponPositionsToDelete = new ArrayList<>();
+
+        for (int i = 0; i < mData.size(); i++) {
+            String[] data = mData.get(i).split(";");
+            if (isItemSelected(data)) {
+                couponPositionsToDelete.add(i);
+            }
+        }
+        removeItemsFromDb(couponPositionsToDelete);
     }
 
     @Override
@@ -133,7 +265,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
         }
         switch (rowType) {
             case TYPE_ITEM:
-                holder.btnSavedSil = (Button) convertView.findViewById(R.id.btnSavedSil);
+                /*holder.btnSavedSil = (Button) convertView.findViewById(R.id.btnSavedSil);
                 holder.btnSavedSil.setTag(position);
                 holder.btnSavedSil.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -187,24 +319,37 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                         });
                         removeItem(position);
                     }
+                });*/
+                String[] data = mData.get(position).split(";");
+
+                holder.chkSavedSec = (CheckBox) convertView.findViewById(R.id.chkSavedSec);
+                holder.chkSavedSec.setTag(position);
+                holder.chkSavedSec.setChecked(data[3].equals("1"));
+                holder.chkSavedSec.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        setItemSelection(position, isChecked);
+                        listener.onSelectionToDelete(buttonView);
+                    }
                 });
+
 
                 holder.tvSaved = (TextView) convertView.findViewById(R.id.tvSaved);
                 holder.tvSavedWin = (TextView) convertView.findViewById(R.id.tvSavedWin);
-                String[] data = mData.get(position).split(";");
+
                 holder.tvSaved.setText(data[0]);
 
-                int myNum = 0;
+                int winCount = 0;
                 try {
-                    myNum = Integer.parseInt(data[1]);
+                    winCount = Integer.parseInt(data[1]);
                 } catch (NumberFormatException nfe) {
                     System.out.println("Could not parse " + nfe);
                 }
 
-                if (myNum < 1) {
+                if (winCount < 1) {
                     holder.tvSavedWin.setText("");
                     holder.tvSavedWin.setTextColor(Color.parseColor("#000000"));
-                } else if (myNum < 3) {
+                } else if (winCount < 3) {
                     holder.tvSavedWin.setText(data[1] + " tuttu");
                     holder.tvSavedWin.setTextColor(Color.parseColor("#EEEEEE"));
                 } else {
@@ -226,7 +371,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
     }
 
     private static class ViewHolder {
-        private Button btnSavedSil;
+        private CheckBox chkSavedSec;
         private TextView tvSaved;
         private TextView tvSavedWin;
     }
