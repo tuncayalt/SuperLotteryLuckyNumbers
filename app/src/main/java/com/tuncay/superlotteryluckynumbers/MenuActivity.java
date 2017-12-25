@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
@@ -229,7 +230,7 @@ public class MenuActivity extends AppCompatActivity {
 
     private void SyncDeleted() {
         realm = Realm.getDefaultInstance();
-        final RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
+        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
 
         if (notSyncedDeletedRealmResults != null && !notSyncedDeletedRealmResults.isEmpty()) {
             List<String> couponIdListToDelete = new ArrayList<>();
@@ -244,6 +245,7 @@ public class MenuActivity extends AppCompatActivity {
                 public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                     if (response.isSuccessful()) {
                         realm = Realm.getDefaultInstance();
+                        RealmResults<Coupon> notSyncedDeletedRealmResults = realm.where(Coupon.class).equalTo("user", userId).equalTo("isDeleted", true).equalTo("serverCalled", "F").findAll();
                         realm.beginTransaction();
                         for (Coupon coupon : notSyncedDeletedRealmResults) {
                             coupon.setServerCalled("T");
@@ -251,13 +253,13 @@ public class MenuActivity extends AppCompatActivity {
                         realm.commitTransaction();
                         realm.refresh();
                     } else {
-                        //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
+                        Log.d("CustomListAdapter", "response unsuccessful" + response.code());
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Boolean> call, Throwable t) {
-                    //Log.d("CustomListAdapter", "response failure");
+                    Log.d("CustomListAdapter", "response failure");
                 }
             });
 
