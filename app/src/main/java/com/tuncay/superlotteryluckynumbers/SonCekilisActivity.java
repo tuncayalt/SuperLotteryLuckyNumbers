@@ -132,7 +132,8 @@ public class SonCekilisActivity extends AppCompatActivity {
                 editor.putString("cekilisJson", result);
                 editor.apply();
             }
-            progress.dismiss();
+            if (progress.isShowing())
+                progress.dismiss();
         }
     }
 
