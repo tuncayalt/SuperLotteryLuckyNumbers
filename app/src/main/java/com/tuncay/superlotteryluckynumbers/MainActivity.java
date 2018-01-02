@@ -459,12 +459,14 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             ArrayList<Date> result = new ArrayList<>();
 
             Calendar date = Calendar.getInstance();
-            while (date.get(Calendar.DAY_OF_WEEK) != Calendar.THURSDAY)
+            while (date.get(Calendar.DAY_OF_WEEK) != Constant.lotteryDay)
                 date.add(Calendar.DATE, 1);
 
-            for (int i = 0; i < 5; i++) {
+            date.add(Calendar.DATE, 7);
+
+            for (int i = 0; i < 20; i++) {
                 result.add(date.getTime());
-                date.add(Calendar.DATE, 7);
+                date.add(Calendar.DATE, -7);
             }
 
             return result;
@@ -479,6 +481,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             }
 
             spinnerAdapter.notifyDataSetChanged();
+            s.setSelection(1);
         }
     }
 }
