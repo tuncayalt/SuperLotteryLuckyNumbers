@@ -1,6 +1,7 @@
 package com.tuncay.superlotteryluckynumbers;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -91,7 +92,7 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
             SharedPreferences shaPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
             long couponsLastTime = shaPref.getLong("couponsLastTime", 0);
 
-            if (System.currentTimeMillis() - couponsLastTime > 120000){
+            if (System.currentTimeMillis() - couponsLastTime > 120000 || FromMain()){
                 SharedPreferences sharedPref = SavedActivity.this.getSharedPreferences("couponsGetTime", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.putLong("couponsLastTime", System.currentTimeMillis());
@@ -145,6 +146,13 @@ public class SavedActivity extends AppCompatActivity implements CustomSavedListA
             progress.dismiss();
         }
 
+    }
+
+    private boolean FromMain() {
+        Intent intent = getIntent();
+        String fromActivity = intent.getStringExtra("fromActivity");
+
+        return fromActivity != null && fromActivity.equals("main");
     }
 
     public void getCouponsFromLocalDb(String userId) {

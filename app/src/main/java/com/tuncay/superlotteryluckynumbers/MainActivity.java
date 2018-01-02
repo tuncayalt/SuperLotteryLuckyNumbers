@@ -345,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
     private void goToSaved(String userId) {
         Intent intent = new Intent(this, SavedActivity.class);
         intent.putExtra("userId", userId);
+        intent.putExtra("fromActivity", "main");
         startActivity(intent);
         finish();
     }
