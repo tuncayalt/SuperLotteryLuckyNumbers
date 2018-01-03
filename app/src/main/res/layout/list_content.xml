@@ -28,13 +28,4 @@
         android:layout_weight="65"
         android:id="@+id/txtSayilar" />
 
-    <CheckBox
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Seç"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="20"
-        android:textColor="#EEEEEE"
-        android:onClick="Sec"
-        android:id="@+id/chkOyna" />
 </LinearLayout>

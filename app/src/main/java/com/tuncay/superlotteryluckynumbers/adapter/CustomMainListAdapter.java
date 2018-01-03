@@ -36,10 +36,7 @@ public class CustomMainListAdapter extends ArrayAdapter<MainListElement> {
         Button btn = (Button) convertView.findViewById(R.id.btnListedenSil);
         btn.setTag(position);
         TextView sayilar = (TextView) convertView.findViewById(R.id.txtSayilar);
-        CheckBox cb = (CheckBox) convertView.findViewById(R.id.chkOyna);
-        cb.setTag(position);
         sayilar.setText(elements.get(position).getNumString());
-        cb.setChecked(elements.get(position).getOyna());
 
         return convertView;
     }

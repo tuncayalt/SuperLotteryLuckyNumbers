@@ -5,20 +5,10 @@ package com.tuncay.superlotteryluckynumbers.model;
  */
 public class MainListElement {
 
-
     String nums;
-    boolean oyna;
 
-    public MainListElement(String nums, boolean oyna){
+    public MainListElement(String nums){
         this.nums = nums;
-        this.oyna = oyna;
-    }
-
-    public boolean getOyna() {
-        return oyna;
-    }
-    public void setOyna(boolean oyna) {
-        this.oyna = oyna;
     }
 
     public String getNumString() {

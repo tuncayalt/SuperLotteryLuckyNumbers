@@ -161,9 +161,9 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         LinearLayout llNumPicker = (LinearLayout) d.findViewById(R.id.llNumpicker);
         LinearLayout currentLayout = new LinearLayout(this);
         numberToChoose = 6;
-        for (int i = pickerMinNumber; i < pickerMaxNumber; i++){
+        for (int i = pickerMinNumber; i < pickerMaxNumber; i++) {
 
-            if (i % 6 == 0){
+            if (i % 6 == 0) {
                 LinearLayout ll = new LinearLayout(this);
                 LinearLayout.LayoutParams llParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -188,19 +188,18 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    boolean tag = (boolean)v.getTag();
-                    if (tag){
+                    boolean tag = (boolean) v.getTag();
+                    if (tag) {
                         v.setTag(false);
                         v.setBackgroundColor(Color.parseColor("#2980B9"));
                         numberToChoose++;
                         b1.setEnabled(false);
-                    }
-                    else{
+                    } else {
                         if (numberToChoose > 0) {
                             v.setTag(true);
                             v.setBackgroundColor(Color.parseColor("#C0392B"));
                             numberToChoose--;
-                            if (numberToChoose == 0){
+                            if (numberToChoose == 0) {
                                 b1.setEnabled(true);
                             }
                         }
@@ -213,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (numberToChoose != 0 )
+                if (numberToChoose != 0)
                     return;
 
                 ArrayList<View> layouts = getViewsInLayout((LinearLayout) d.findViewById(R.id.llNumpicker));
@@ -231,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 }
                 Collections.sort(selectedNums);
                 int currentNum = -1;
-                for (String num:selectedNums) {
+                for (String num : selectedNums) {
                     currentNum++;
                     ((EditText) views.get(currentNum)).setText(num);
                 }
@@ -280,21 +279,18 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
         //JSONArray couponJsonArr = new JSONArray();
 
         for (MainListElement li : elements) {
-            if (li.getOyna()) {
-
-                Coupon coupon = new Coupon();
-                coupon.setCouponId(java.util.UUID.randomUUID().toString());
-                coupon.setUser(userId);
-                coupon.setGameType("Sup");
-                coupon.setNumbers(li.getNumString());
-                coupon.setPlayTime(date);
-                coupon.setLotteryTime(dateLottery);
-                coupon.setToRemind("T");
-                coupon.setServerCalled("F");
-                coupon.setWinCount(-1);
-                coupon.setDeleted(false);
-                couponList.add(coupon);
-            }
+            Coupon coupon = new Coupon();
+            coupon.setCouponId(java.util.UUID.randomUUID().toString());
+            coupon.setUser(userId);
+            coupon.setGameType("Sup");
+            coupon.setNumbers(li.getNumString());
+            coupon.setPlayTime(date);
+            coupon.setLotteryTime(dateLottery);
+            coupon.setToRemind("T");
+            coupon.setServerCalled("F");
+            coupon.setWinCount(-1);
+            coupon.setDeleted(false);
+            couponList.add(coupon);
         }
         realm.beginTransaction();
         managedCouponList = realm.copyToRealm(couponList);
@@ -391,18 +387,11 @@ public class MainActivity extends AppCompatActivity implements NumberPicker.OnVa
                 currentNumString += "-";
         }
 
-        MainListElement listElement = new MainListElement(currentNumString, true);
+        MainListElement listElement = new MainListElement(currentNumString);
 
         elements.add(listElement);
         adapter.notifyDataSetChanged();
 
-    }
-
-    public void Sec(View view) {
-        MainListElement le = elements.get((Integer) view.getTag());
-
-        le.setOyna(((CheckBox) view).isChecked());
-        adapter.notifyDataSetChanged();
     }
 
     public ArrayList<Integer> getRandomIntegers(Random random, int count) {
