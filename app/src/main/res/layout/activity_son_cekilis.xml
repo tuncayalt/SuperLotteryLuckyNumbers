@@ -40,9 +40,7 @@
         android:divider="@drawable/empty_divider"
         android:gravity="center"
         android:padding="20dp"
-        android:showDividers="middle"
-
-        >
+        android:showDividers="middle" >
 
         <TextView
             android:id="@+id/txtCekilisNumaralar1"
@@ -73,16 +71,6 @@
             android:padding="10dp"
             android:text="0"
             android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@drawable/empty_divider"
-        android:gravity="center"
-        android:padding="20dp"
-        android:showDividers="middle"
-        >
 
         <TextView
             android:id="@+id/txtCekilisNumaralar4"
