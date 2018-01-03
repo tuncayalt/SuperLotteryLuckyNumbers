@@ -21,7 +21,35 @@
             android:layout_weight="1"
             android:orientation="horizontal">
 
-            <Button
+            <LinearLayout
+                android:id="@+id/btnSansliNumaraBul"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#C0392B"
+                android:clickable="true"
+                android:onClick="SevdigimKelimeAl"
+                android:padding="20dp"
+                android:gravity="center"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/clover"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="ŞANSLI NUMARA BUL"
+                    android:textColor="#EEEEEE"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+<!--            <Button
                 android:id="@+id/btnSansliNumaraBul"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -32,9 +60,36 @@
                 android:padding="20dp"
                 android:text="ŞANSLI NUMARA BUL"
                 android:textColor="#EEEEEE"
-                android:textSize="15sp" />
+                android:textSize="15sp" />-->
 
-            <Button
+            <LinearLayout
+                android:id="@+id/btnKuponlarım"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#16A085"
+                android:clickable="true"
+                android:onClick="Kuponlarim"
+                android:padding="20dp"
+                android:gravity="center"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/kuponlarim"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="KUPONLARIM"
+                    android:textColor="#EEEEEE"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+            <!--<Button
                 android:id="@+id/btnKuponlarım"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -45,7 +100,7 @@
                 android:padding="20dp"
                 android:text="KUPONLARIM"
                 android:textColor="#EEEEEE"
-                android:textSize="15sp" />
+                android:textSize="15sp" />-->
 
         </LinearLayout>
 
@@ -55,7 +110,34 @@
             android:layout_weight="1"
             android:orientation="horizontal">
 
-            <Button
+            <LinearLayout
+                android:id="@+id/btnSonCekilis"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#2980B9"
+                android:clickable="true"
+                android:onClick="SonCekilis"
+                android:padding="20dp"
+                android:gravity="center"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/top"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="SON ÇEKİLİŞ SONUÇLARI"
+                    android:textColor="#EEEEEE"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+            <!--<Button
                 android:id="@+id/btnSonCekilis"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -66,9 +148,36 @@
                 android:padding="20dp"
                 android:text="SON ÇEKİLİŞ SONUÇLARI"
                 android:textColor="#EEEEEE"
-                android:textSize="15sp" />
+                android:textSize="15sp" />-->
 
-            <Button
+            <LinearLayout
+                android:id="@+id/btnAyarlar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="#9B59B6"
+                android:clickable="true"
+                android:onClick="Ayarlar"
+                android:padding="20dp"
+                android:gravity="center"
+                >
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_preferences"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="AYARLAR"
+                    android:textColor="#EEEEEE"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+            <!--<Button
                 android:id="@+id/btnAyarlar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -79,7 +188,7 @@
                 android:padding="20dp"
                 android:text="AYARLAR"
                 android:textColor="#EEEEEE"
-                android:textSize="15sp" />
+                android:textSize="15sp" />-->
 
         </LinearLayout>
 
