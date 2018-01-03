@@ -25,7 +25,7 @@
         android:typeface="monospace"
         android:gravity="center"
         android:layout_gravity="center_vertical"
-        android:layout_weight="65"
+        android:layout_weight="85"
         android:id="@+id/txtSayilar" />
 
 </LinearLayout>
