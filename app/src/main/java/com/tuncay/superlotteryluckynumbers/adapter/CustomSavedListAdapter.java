@@ -328,6 +328,8 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                 holder.chkSavedSec.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (position >= mData.size())
+                            return;
                         setItemSelection(position, isChecked);
                         listener.onSelectionToDelete(buttonView);
                     }
