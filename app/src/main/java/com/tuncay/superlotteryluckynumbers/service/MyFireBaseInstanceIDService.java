@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.User;
 
@@ -87,7 +88,7 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         Log.d("userId:", userId);
         boolean sentToServer = sharedPref.getBoolean("sentToServer", false);
 
-        if ((!sentToServer && !userId.equals("")) || pushCekilis.substring(0,1).equals("D")){
+        if ((!sentToServer && !userId.equals("")) || pushCekilis.substring(0, 1).equals("D")) {
             recentToken = FirebaseInstanceId.getInstance().getToken();
             Log.d("recentToken:", recentToken);
             prevToken = sharedPref.getString("token", "");
@@ -107,10 +108,18 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
         user.setPush_cekilis(pushCekilis);
         user.setPush_win(pushCekilis);
 
+
+        if (pushCekilis.substring(1, 2).equals("F")) {
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(Constant.superLotoPushCekilis);
+        } else {
+            FirebaseMessaging.getInstance().subscribeToTopic(Constant.superLotoPushCekilis);
+        }
+
+
         Call<Boolean> userCall;
-        if (url.equals(urlSaveUser)){
+        if (url.equals(urlSaveUser)) {
             userCall = serverService.updateUser(user);
-        }else{
+        } else {
             userCall = serverService.updateUserToken(user);
         }
 

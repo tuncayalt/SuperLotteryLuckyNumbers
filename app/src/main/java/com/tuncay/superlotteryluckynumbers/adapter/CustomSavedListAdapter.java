@@ -265,61 +265,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
         }
         switch (rowType) {
             case TYPE_ITEM:
-                /*holder.btnSavedSil = (Button) convertView.findViewById(R.id.btnSavedSil);
-                holder.btnSavedSil.setTag(position);
-                holder.btnSavedSil.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //TODO: realm ve servere kaydet
 
-                        final ProgressDialog dialog = new ProgressDialog(context, ProgressDialog.THEME_HOLO_DARK);
-                        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        dialog.setTitle("Lütfen bekleyin");
-                        dialog.setMessage("Kupon siliniyor...");
-                        dialog.show();
-
-                        try {
-                            Thread.sleep(600);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                        realm = Realm.getDefaultInstance();
-
-                        couponIdToDelete = mData.get(position).split(";")[2];
-                        final Coupon couponToDelete = realm.where(Coupon.class)
-                                .equalTo("couponId", couponIdToDelete).findFirst();
-                        realm.beginTransaction();
-                        couponToDelete.setDeleted(true);
-                        couponToDelete.setServerCalled("F");
-                        realm.commitTransaction();
-                        realm.refresh();
-
-                        Call<Boolean> couponDeleteCall = serverService.deleteCoupon(couponIdToDelete);
-                        couponDeleteCall.enqueue(new Callback<Boolean>() {
-                            @Override
-                            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                                dialog.dismiss();
-                                if (response.isSuccessful()) {
-                                    realm = Realm.getDefaultInstance();
-                                    realm.beginTransaction();
-                                    couponToDelete.setServerCalled("T");
-                                    realm.commitTransaction();
-                                    realm.refresh();
-                                } else {
-                                    //Log.d("CustomListAdapter", "response unsuccessful" + response.code());
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Boolean> call, Throwable t) {
-                                dialog.dismiss();
-                                //Log.d("CustomListAdapter", "response failure");
-                            }
-                        });
-                        removeItem(position);
-                    }
-                });*/
                 String[] data = mData.get(position).split(";");
 
                 holder.chkSavedSec = (CheckBox) convertView.findViewById(R.id.chkSavedSec);
@@ -328,7 +274,7 @@ public class CustomSavedListAdapter extends BaseAdapter implements ListAdapter {
                 holder.chkSavedSec.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (position >= mData.size())
+                        if (position >= mData.size() || !mData.get(position).contains(";"))
                             return;
                         setItemSelection(position, isChecked);
                         listener.onSelectionToDelete(buttonView);

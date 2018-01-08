@@ -15,4 +15,5 @@ public class Constant {
 
     public static final int lotteryDay = Calendar.THURSDAY;
     public static final long interstatialWaitTime = 1000000;
+    public static final String superLotoPushCekilis = "superlotopushcekilis";
 }
