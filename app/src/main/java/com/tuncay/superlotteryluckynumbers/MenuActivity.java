@@ -54,9 +54,11 @@ public class MenuActivity extends AppCompatActivity {
                     "veya\n" +
                     "- Şanslı numaralarınızı kendiniz girin\n",
             "- Numaralarınızı girdikten sonra\n" +
-                    "- Kaydedilecek olanları seçin\n" +
                     "- Çekiliş tarihini seçin\n" +
-                    "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin"
+                    "- Kaydet'i tıklayıp şanslı numaralarınızı kaydedin",
+            "KUPONLARIM sayfasından,\n" +
+                    "Çekilişin sonucu belli ise sonuçları anında görün,\n" +
+                    "Belli değil ise sonuçları açıklanınca görün\n"
     };
     private AdView mAdView;
     List<Coupon> notSyncedCouponList;
@@ -131,7 +133,6 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode,
                                  KeyEvent event) {
-                // TODO Auto-generated method stub
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
                     SharedPreferences sPref = getSharedPreferences("firstInfoDialog", MODE_PRIVATE);
                     SharedPreferences.Editor editor = sPref.edit();

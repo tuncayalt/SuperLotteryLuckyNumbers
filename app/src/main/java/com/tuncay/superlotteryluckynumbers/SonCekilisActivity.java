@@ -84,20 +84,25 @@ public class SonCekilisActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String result = "";
             try {
-                Cekilis cekilis = serverService.getSonCekilis().execute().body();
+                SharedPreferences shaPref = SonCekilisActivity.this.getPreferences(Context.MODE_PRIVATE);
+                long sonCekilisLastTime = shaPref.getLong("sonCekilisLastTime", 0);
 
-                Gson gson = new Gson();
+                if (System.currentTimeMillis() - sonCekilisLastTime > Constant.sonCekilisWaitTime) {
+                    Cekilis cekilis = serverService.getSonCekilis().execute().body();
+                    Gson gson = new Gson();
+                    result = gson.toJson(cekilis);
 
-                result = gson.toJson(cekilis);
-
-                error = false;
-
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    SharedPreferences sharedPref = SonCekilisActivity.this.getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putLong("sonCekilisLastTime", System.currentTimeMillis());
+                    editor.putString("cekilisJson", result);
+                    editor.apply();
                 }
-
+                else {
+                    result = shaPref.getString("cekilisJson", "");
+                }
+                
+                error = false;
                 return result;
             }
             catch (MalformedURLException e) {
@@ -115,10 +120,20 @@ public class SonCekilisActivity extends AppCompatActivity {
                 error = true;
                 return null;
             }
+            catch (Exception e) {
+                e.printStackTrace();
+                error = true;
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(String result) {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (error){
                 String errorText = "İnternet bağlantısında hata";
                 Toast toast = Toast.makeText(SonCekilisActivity.this, errorText, Toast.LENGTH_LONG);
@@ -127,10 +142,6 @@ public class SonCekilisActivity extends AppCompatActivity {
                 NumaraYaz(sharedPref.getString("cekilisJson", ""));
             }else {
                 NumaraYaz(result);
-                SharedPreferences sharedPref = SonCekilisActivity.this.getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString("cekilisJson", result);
-                editor.apply();
             }
             if (progress.isShowing())
                 progress.dismiss();
