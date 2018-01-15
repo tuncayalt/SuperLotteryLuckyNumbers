@@ -4,15 +4,14 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@drawable/layout_gradient"
-    android:paddingLeft="30dp"
-    android:paddingRight="30dp"
+    android:padding="20dp"
     >
 
     <TextView
         android:id="@+id/tvAppRaterHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Süper Loto Şanslı Numaralar uygulamasını beğendiyseniz oy verebilirsiniz."
+        android:text="Süper Loto Şanslı Numaralar uygulamasını beğendiyseniz oy vermek ister misiniz?"
         android:textSize="20sp"
         android:gravity="center_horizontal"
         android:textColor="#EEEEEE"/>
@@ -22,7 +21,8 @@
         android:id="@+id/cbAppRaterGosterme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bir daha gösterme" />
+        android:text="Bir daha gösterme"
+        android:textColor="#999999" />
 
     <LinearLayout
         android:layout_width="match_parent"

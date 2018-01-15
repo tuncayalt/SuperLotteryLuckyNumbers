@@ -4,8 +4,7 @@
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@drawable/layout_gradient"
-    android:paddingLeft="30dp"
-    android:paddingRight="30dp"
+    android:padding="30dp"
     >
 
     <TextView
@@ -30,7 +29,8 @@
         android:id="@+id/cbFirstInfoGosterme"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Bir daha gösterme" />
+        android:text="Bir daha gösterme"
+        android:textColor="#999999"/>
 
     <LinearLayout
         android:layout_width="match_parent"
