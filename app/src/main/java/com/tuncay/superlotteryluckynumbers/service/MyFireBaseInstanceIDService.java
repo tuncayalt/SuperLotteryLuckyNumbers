@@ -9,9 +9,6 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.User;
-
-import java.net.URL;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
