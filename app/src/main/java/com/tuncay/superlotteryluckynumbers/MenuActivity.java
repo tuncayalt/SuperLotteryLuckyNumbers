@@ -24,6 +24,7 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.tuncay.superlotteryluckynumbers.constant.Constant;
 import com.tuncay.superlotteryluckynumbers.model.Coupon;
+import com.tuncay.superlotteryluckynumbers.service.AppRater;
 import com.tuncay.superlotteryluckynumbers.service.IServerService;
 import com.tuncay.superlotteryluckynumbers.service.MyFireBaseInstanceIDService;
 
@@ -93,6 +94,7 @@ public class MenuActivity extends AppCompatActivity {
 
         showFirstInfoDialog();
 
+        AppRater.app_launched(this);
     }
 
     private void loadBannerAd() {

@@ -12,7 +12,7 @@
         android:id="@+id/tvFirstInfoHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Süper Loto Şanslı Numara"
+        android:text="Süper Loto Şanslı Numaralar"
         android:textSize="30sp"
         android:gravity="center_horizontal"
         android:textColor="#AA3333"/>

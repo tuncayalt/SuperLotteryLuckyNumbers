@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/layout_gradient"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    >
+
+    <TextView
+        android:id="@+id/tvAppRaterHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Süper Loto Şanslı Numaralar uygulamasını beğendiyseniz oy verebilirsiniz."
+        android:textSize="20sp"
+        android:gravity="center_horizontal"
+        android:textColor="#EEEEEE"/>
+
+
+    <CheckBox
+        android:id="@+id/cbAppRaterGosterme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bir daha gösterme" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="5dp">
+        <Button
+            android:id="@+id/btnAppRaterCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonshape"
+            android:layout_weight="1"
+            android:text="Kapat" />
+        <Button
+            android:id="@+id/btnAppRaterRate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/buttonshapeactive"
+            android:layout_weight="1"
+            android:text="Oy Ver" />
+    </LinearLayout>
+</LinearLayout>
