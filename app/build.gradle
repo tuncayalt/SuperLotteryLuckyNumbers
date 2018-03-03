@@ -7,8 +7,9 @@ android {
         applicationId "com.tuncay.superlotteryluckynumbers"
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 20
-        versionName "1.1.20"
+        versionCode 21
+        versionName "1.1.21"
+//        constanttaki dev sunucusunu prod yap
         multiDexEnabled true
     }
     buildTypes {
