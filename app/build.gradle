@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.tuncay.superlotteryluckynumbers"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 22
         versionName "1.1.22"
 //        constanttaki dev sunucusunu prod yap
