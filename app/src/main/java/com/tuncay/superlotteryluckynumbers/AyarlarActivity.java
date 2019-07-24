@@ -1,10 +1,13 @@
 package com.tuncay.superlotteryluckynumbers;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -68,5 +71,11 @@ public class AyarlarActivity extends AppCompatActivity {
         SharedPreferences sPref = getSharedPreferences("sevdigimKelime", MODE_PRIVATE);
         String sevdigimKelime = sPref.getString("kelime", "");
         return sevdigimKelime;
+    }
+
+    public void PrivacyPolicy(View view) {
+        Uri uri = Uri.parse("https://tuncayaltinpulluk.com/projects/SuperLotteryLuckyNumbers/privacy_policy.html");
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
     }
 }

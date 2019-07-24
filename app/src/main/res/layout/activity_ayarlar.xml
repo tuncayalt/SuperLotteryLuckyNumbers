@@ -54,5 +54,16 @@
         android:textSize="20sp"
         android:layout_gravity="center_horizontal"/>
 
+    <Button
+        android:id="@+id/btnPrivacy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#EEEEEE"
+        android:background="@drawable/buttonshapeactive"
+        android:layout_margin="20dp"
+        android:text="Privacy Policy / Gizlilik Politikası (İngilizce)"
+        android:layout_gravity="center_horizontal"
+        android:onClick="PrivacyPolicy"/>
+
 
 </LinearLayout>
